@@ -132,5 +132,5 @@ while True:
             if is_playing and button.track == current_track:    # User pressed same button twice and it was playing, so stop
                 stop_playing()
             else:
-                start_playing(button.track, button.duration, current_button.color)
+                start_playing(button.track, button.duration, button.color)
             
