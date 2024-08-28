@@ -128,6 +128,8 @@ def stop_playing():
     pixels.fill((0,0,0))
     pixels.show()
     player.stop()
+    if current_animation is not None:
+    	current_animation.reset()
     current_track = -1
     sound_end_time = -1
 
