@@ -29,7 +29,7 @@ class PingTrigger(TriggerObject):
         if now - self.last_read_time > 0.1:  # Limit how frequently distance is checked
             try:
                 self.current_distance = self.sonar.distance
-                print(self.current_distance)
+                #print(self.current_distance)
                 self.switch.update()
                 self.last_read_time = now
             except:
