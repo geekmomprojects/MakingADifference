@@ -6,12 +6,13 @@ from adafruit_debouncer import Debouncer
 # Trigger object is a toggle switch (triggers on flip)
 class ToggleTrigger(TriggerObject):
 
-    def __init__(self, name, pin, *button_actions):
+    def __init__(self, name, pin, toggle_both=True, *button_actions):
         # Create a debounced button object
         pinobj = DigitalInOut(pin)
         pinobj.direction = Direction.INPUT
         pinobj.pull = Pull.UP
         self.switch             = Debouncer(pinobj)
+        self.toggle_both = toggle_both
         #print(name, pin, button_actions)
         # Call base class constructor
         super().__init__(name, list(button_actions))
@@ -20,4 +21,7 @@ class ToggleTrigger(TriggerObject):
         self.switch.update()
 
     def is_triggered(self):
-        return (self.switch.fell or self.switch.rose)
+        if self.toggle_both:
+            return (self.switch.fell or self.switch.rose)
+        else:
+            return self.switch.rose

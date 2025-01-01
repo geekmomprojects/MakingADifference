@@ -1,23 +1,15 @@
-#import board
-#import busio
-#import time
-#import random
-#import math
-
-#from adafruit_motor import servo
-#from digitalio import DigitalInOut, Direction, Pull
-#from adafruit_debouncer import Debouncer
-#from dyplayer import DYPlayer
-#import adafruit_hcsr04
-#from adafruit_led_animation.animation import Animation
 from action_object.action_group import ActionGroup
 
 
 # Abstract base class for all triggers. Can be a button/toggle switch/sensor or any input
 # that changes state
 class TriggerObject:
+    # Static member variable
+    restricted_triggers = None      # If not none, these are the only trigger(s) that will
+                                    # be processed
+
     def __init__(self, name, actions):
-        trigger_actions = []
+        trigger_actions = []        # list of actions corresponding to trigger
         for a in actions:
             if type(a) is list:     # unpack any actions in list format
                 for item in a:
@@ -50,6 +42,7 @@ class TriggerObject:
     def update(self):
         pass
 
+    # Move to the next item in the list of action groups
     def advance(self):
         if len(self.actions) > 0:
             self.action_index = (self.action_index + 1) % len(self.actions)
