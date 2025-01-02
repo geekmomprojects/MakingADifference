@@ -6,7 +6,7 @@ from adafruit_debouncer import Debouncer
 # Trigger object is a toggle switch (triggers on flip)
 class ToggleTrigger(TriggerObject):
 
-    def __init__(self, name, pin, toggle_both=True, *button_actions):
+    def __init__(self, name, pin, button_actions, toggle_both=True):
         # Create a debounced button object
         pinobj = DigitalInOut(pin)
         pinobj.direction = Direction.INPUT
@@ -15,7 +15,7 @@ class ToggleTrigger(TriggerObject):
         self.toggle_both = toggle_both
         #print(name, pin, button_actions)
         # Call base class constructor
-        super().__init__(name, list(button_actions))
+        super().__init__(name, button_actions)
 
     def update(self):
         self.switch.update()
