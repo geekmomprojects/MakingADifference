@@ -37,7 +37,7 @@ class ActionGroup:
 
     # must be called repeatedly in main loop while group is active
     # will update the actions in the list
-    def update(self):
+    def do_action(self):
         if self.is_active():
             if time.monotonic() - self.action_start_time < self.duration:
                 for a in self.action_list:

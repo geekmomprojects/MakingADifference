@@ -4,11 +4,9 @@ from action_object.action_group import ActionGroup
 # Abstract base class for all triggers. Can be a button/toggle switch/sensor or any input
 # that changes state
 class TriggerObject:
-    # Static member variable
-    restricted_triggers = None      # If not none, these are the only trigger(s) that will
-                                    # be processed
 
-    def __init__(self, name, actions):
+    # Instance functions
+    def __init__(self, name, actions, allow_restart=True):
         trigger_actions = []        # list of actions corresponding to trigger
         for a in actions:
             if type(a) is list:     # unpack any actions in list format
@@ -22,10 +20,12 @@ class TriggerObject:
             else:
                 raise TypeError("Actions passed to TriggerObject must be part of an ActionGroup")
 
-        self.name               = name
-        self.actions            = trigger_actions
-        self.action_index       = 0
-        self.current_action     = self.actions[self.action_index] if len(self.actions) > 0 else None
+        self.name                   = name
+        self.actions                = trigger_actions
+        self.allow_restart          = allow_restart
+        self.action_index           = 0
+        self.current_action         = self.actions[self.action_index] if len(self.actions) > 0 else None
+                                                                #
 
     def addActionGroup(self, duration, *actions):
         self.actions.append(ActionGroup(duration, actions))
@@ -55,19 +55,35 @@ class TriggerObject:
             return False
 
     def start(self):
+        print("starting trigger ", self.name)
         if self.current_action is not None:
             self.current_action.start()
 
     def stop(self):
+        print("stopping trigger ", self.name)
         if self.current_action is not None:
             self.current_action.stop()
             self.advance()
+
+    def toggle(self):
+        if self.is_active():
+            self.stop()
+        else:
+            self.start()
+
+    def respond_to_trigger(self):
+        if self.is_active():
+            self.stop()
+            if self.allow_restart:
+                self.start()
+        else:
+            self.start()
 
     def play(self):
         if self.current_action is None:
             return False
         else:
-            return self.current_action.update()
+            return self.current_action.do_action()
 
 
 

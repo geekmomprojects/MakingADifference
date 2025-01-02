@@ -32,7 +32,7 @@ class Action:
     # Call this method to start action
     # Call base class method if overridden
     def start_action(self):
-        print("starting", self.name)
+        print("  starting action", self.name)
         self.on_start()
         self.action_start_time = time.monotonic()
 
@@ -41,7 +41,7 @@ class Action:
     # member function if this method is overridden
     def stop_action(self):
         if self.is_active():
-            print("stopping", self.name)
+            print("  stopping action", self.name)
             self.on_stop()
             self.action_start_time = -1
             self.last_action_time  = -1

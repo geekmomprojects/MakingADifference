@@ -6,7 +6,7 @@ from adafruit_debouncer import Debouncer
 # Trigger object is a push button (triggers on press)
 class ButtonTrigger(TriggerObject):
 
-    def __init__(self, name, pin, *button_actions):
+    def __init__(self, name, pin, button_actions, allow_restart=True):
         # Create a debounced button object
         pinobj = DigitalInOut(pin)
         pinobj.direction = Direction.INPUT
@@ -14,7 +14,7 @@ class ButtonTrigger(TriggerObject):
         self.switch             = Debouncer(pinobj)
         #print(name, pin, button_actions)
         # Call base class constructor
-        super().__init__(name, list(button_actions))
+        super().__init__(name, button_actions, allow_restart)
 
     def update(self):
         self.switch.update()
