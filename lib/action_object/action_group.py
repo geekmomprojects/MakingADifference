@@ -22,6 +22,7 @@ class ActionGroup:
         self.action_list        = list(actions)
         self.duration           = duration  # Must be number (seconds) for the action to take place. TBD - add different end condition
         self.action_start_time  = -1
+        self.data               = {}        # Dictionary for storing associated data (e.g. target trigger object)
 
         #print(self.action_list)
 
@@ -53,3 +54,10 @@ class ActionGroup:
             for a in self.action_list:
                 a.stop_action()
             self.action_start_time = -1
+
+    def set_data(self, key, value):
+        self.data[key] = value
+
+    def get_data(self, key):
+        return self.data[key]
+

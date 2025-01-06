@@ -8,7 +8,7 @@ class ActionSound(Action):
         self.player         = player
         self.track_num      = track_num
         self.track_duration = track_duration    # Length of time (seconds) to play track
-        super().__init__("Track " + str(track_num))
+        super().__init__(name="Track " + str(track_num))
 
     def on_start(self):
         self.player.playByNumber(self.track_num)

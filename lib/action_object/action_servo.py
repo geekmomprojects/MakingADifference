@@ -13,7 +13,7 @@ class ActionServo(Action):
         self.end_angle = end_angle
         self.period = period
         self.sevo_pos = start_angle
-        super().__init__(name)
+        super().__init__(name=name)
 
     def action(self):
         if not self.is_active() or self.time_since_last_action() < 0.05:  #Don't update TOO frequently

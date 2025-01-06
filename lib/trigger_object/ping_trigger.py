@@ -7,7 +7,7 @@ from adafruit_debouncer import Debouncer
 
 class PingTrigger(TriggerObject):
 
-    def __init__(self, name, trigger_pin, echo_pin, cutoff_distance, button_actions, allow_restart=True):
+    def __init__(self, name, trigger_pin, echo_pin, cutoff_distance, button_actions, random_actions=False, allow_restart=True):
         self.name               = name
         self.sonar              = adafruit_hcsr04.HCSR04(trigger_pin=trigger_pin,echo_pin=echo_pin)
         self.last_read_time     = 0
@@ -15,8 +15,8 @@ class PingTrigger(TriggerObject):
         self.cutoff_distance    = cutoff_distance
         self.current_distance   = 100
         self.switch             = Debouncer(lambda: self.current_distance < self.cutoff_distance, interval=0.1)
-        super().__init__(name, button_actions, allow_restart)
-        print("initializing ping sensor", name)
+        super().__init__(name, button_actions, random_actions=random_actions, allow_restart=allow_restart)
+        #print("initializing ping sensor", name)
 
     def update(self):
         self.checkDistance()

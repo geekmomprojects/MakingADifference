@@ -1,15 +1,6 @@
 #import board
 #import busio
 import time
-#import random
-#import math
-
-
-#from digitalio import DigitalInOut, Direction, Pull
-#from adafruit_debouncer import Debouncer
-#from dyplayer import DYPlayer
-#import adafruit_hcsr04
-#from adafruit_led_animation.animation import Animation
 
 # A base class for peripherals (motor/animation/sound, etc...) that activate when
 # a button is pushed. Ideally expandable to a wide variety of peripherals.

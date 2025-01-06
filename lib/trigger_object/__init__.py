@@ -1,4 +1,5 @@
 from action_object.action_group import ActionGroup
+import random
 
 
 # Abstract base class for all triggers. Can be a button/toggle switch/sensor or any input
@@ -6,10 +7,12 @@ from action_object.action_group import ActionGroup
 class TriggerObject:
 
     # Instance functions
-    def __init__(self, name, actions, allow_restart=True):
+    def __init__(self, name, action_groups, allow_restart=True, random_actions=False):
+
+
         trigger_actions = []        # list of actions corresponding to trigger
-        for a in actions:
-            if type(a) is list:     # unpack any actions in list format
+        for a in action_groups:
+            if type(a) is list:     # unpack any actions groups in list format
                 for item in a:
                     if isinstance(item, ActionGroup):
                         trigger_actions.append(item)
@@ -20,18 +23,16 @@ class TriggerObject:
             else:
                 raise TypeError("Actions passed to TriggerObject must be part of an ActionGroup")
 
-        self.name                   = name
-        self.actions                = trigger_actions
-        self.allow_restart          = allow_restart
-        self.action_index           = 0
-        self.current_action         = self.actions[self.action_index] if len(self.actions) > 0 else None
-                                                                #
 
-    def addActionGroup(self, duration, *actions):
-        self.actions.append(ActionGroup(duration, actions))
-        if self.current_action is None:
-            self.action_index = 0
-            self.current_action = self.actions[self.action_index]
+        self.name                   = name
+        self.action_groups          = trigger_actions
+        self.allow_restart          = allow_restart     # Determines whether a press while trigger is active
+                                                        # will restart the action (True) or stop it (False)
+        self.random_actions         = random_actions    # Determines whether the action groups play sequentially (False)
+                                                        # or randomly (True)
+        self.action_index           = 0
+        self.current_action         = self.action_groups[self.action_index] if len(self.action_groups) > 0 else None
+
 
     # Must be overridden in child class
     def is_triggered(self):
@@ -44,13 +45,23 @@ class TriggerObject:
 
     # Move to the next item in the list of action groups
     def advance(self):
-        if len(self.actions) > 0:
-            self.action_index = (self.action_index + 1) % len(self.actions)
-            self.current_action = self.actions[self.action_index]
+        #print("in advance trigger", self.name)
+        if len(self.action_groups) > 1:
+            if self.random_actions:
+                self.set_random_action()
+            else:
+                self.action_index = (self.action_index + 1) % len(self.action_groups)
+                self.current_action = self.action_groups[self.action_index]
+
+    def set_random_action(self):
+        #print("in set random action", self.name)
+        self.action_index = random.randint(0, len(self.action_groups)-1)
+        self.current_action = self.action_groups[self.action_index]
 
     def is_active(self):
         if self.current_action is not None:
-            return self.current_action.is_active()
+            result = self.current_action.is_active()
+            return result
         else:
             return False
 
@@ -58,12 +69,15 @@ class TriggerObject:
         print("starting trigger ", self.name)
         if self.current_action is not None:
             self.current_action.start()
+        print("")
 
-    def stop(self):
+    def stop(self, set_next_action=True):
         print("stopping trigger ", self.name)
         if self.current_action is not None:
             self.current_action.stop()
+        if set_next_action:
             self.advance()
+        print("")
 
     def toggle(self):
         if self.is_active():
@@ -73,6 +87,7 @@ class TriggerObject:
 
     def respond_to_trigger(self):
         if self.is_active():
+            #print(" Trigger ", self.name, " pressed while active and self.allow_restart is ", self.allow_restart)
             self.stop()
             if self.allow_restart:
                 self.start()
@@ -85,7 +100,26 @@ class TriggerObject:
         else:
             return self.current_action.do_action()
 
+    def get_current_action_data(self, key):
+        result = None
+        if self.current_action is not None:
+            result = self.current_action.get_data(key)
+        return result
 
+'''
+class TargetedTriggerObject(TriggerObject):
+    def __init__(self, name, actions, targets, allow_restart=True, random_actions=False):
+        super().__init__(name, actions, allow_restart, random_actions)
+
+
+
+    def get_target(self):
+        if self.action_index < 0:
+            return None
+        else:
+            return self.targets[self.action_index]
+
+'''
 
 
 

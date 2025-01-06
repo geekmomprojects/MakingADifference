@@ -6,7 +6,7 @@ from adafruit_led_animation.animation import Animation
 class ActionAnimation(Action):
     def __init__(self, animation):
         self.animation = animation
-        super().__init__(animation.__class__.__name__)
+        super().__init__(name=animation.__class__.__name__)
 		
 	# Converts an animation into an object	
 	# object of the correct type
