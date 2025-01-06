@@ -89,6 +89,7 @@ soundPressB     = ActionSound(player, 13) # 3 seconds long - "Press button B"
 soundToggleC    = ActionSound(player, 14) # 3 seconds long - "Toggle switch C"
 songActivateP   = ActionSound(player, 15) # 3 seconds long - "Activate the ping sensor"
 
+# Sound action objects for the response triggers
 soundTouchedB   = ActionSound(player, 18) # 3 seconds long - "You pressed button B"
 soundToggledC   = ActionSound(player, 19) # 3 seconds long - "You toggled switch C"
 soundActivatedP = ActionSound(player, 20) # 3 seconds long - "You activated the ping sensor"
@@ -101,6 +102,9 @@ PIN_A       = board.GP16
 ACTIONS_A   = [ ActionGroup(5, soundPressB, chaseBlueAnimation),
                 ActionGroup(5, soundToggleC, rainbowAnimation),
                 ActionGroup(5, songActivateP, chaseRedAnimation)]
+
+# Create the instructions TriggerObject
+ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
 
 # Button B activates a motor when pressed
 PIN_B       = board.GP17                # Pi Pico pin attached to button
@@ -117,13 +121,10 @@ ACTIONS_PING   = [  ActionGroup(4, soundActivatedP, chaseBlueAnimation, servoAct
                     ActionGroup(4, soundActivatedP, rainbowAnimation, servoAction1),
                     ActionGroup(4, soundActivatedP, chaseRedAnimation, servoAction1) ]
 
-#Create a Ping trigger object
-Ping1 = PingTrigger ("Ping1",board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)
-
-# Create button objects
-ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
+# Create Response Trigger Objects
 ButtonB = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)
 ToggleC = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=True, toggle_both=False) # both ways or only when flipped one way (toggle_both keyword)
+Ping1 = PingTrigger ("Ping1",board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)
 
 # Since ButtonA is the "instructions" button, we are going to add a "target" trigger to each of its
 # ActionGroup objects. That target is the specific trigger the instructions tell the child to press
@@ -183,5 +184,5 @@ while True:
                 if focus_trigger != instruction_trigger:
                     current_trigger = instruction_trigger                   # Wrong trigger was selected, so play instructions again
                     current_trigger.start()
-            break                                                           # Don't allow more than one simultaneous instruction
+            break                                                           # Don't allow more than one simultaneous trigger
 
