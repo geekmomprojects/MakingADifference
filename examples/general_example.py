@@ -103,7 +103,7 @@ songAction10 = ActionSound(player, 10)
 #  number of ActionObjects (e.g. ActionSound, ActionAnimation, ActionServo) that will occur simultaneously
 #  when triggered, and persist for the time duration specified. You can have just one action.
 
-# First we will create the properties for each trigger object. 
+##### First we must create and define properties for each trigger object. 
 
 
 PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A, This button can be pressed 3 times to execute 3 different action groups
@@ -126,7 +126,7 @@ ACTIONS_PING   = [  ActionGroup(6, songAction8, chaseBlueAnimation, servoAction2
                     ActionGroup(6, songAction9, rainbowAnimation, servoAction2),
                     ActionGroup(6, songAction10, chaseRedAnimation, servoAction2) ]
 
-#Create a Ping trigger object using the definitions we stated above. The first property is the name, etc. 
+####### Now, create trigger objects using the properties we defined above. The first property is the name, etc. 
 
 Ping1 = PingTrigger ("Ping1", board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
 
