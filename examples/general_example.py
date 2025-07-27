@@ -101,9 +101,11 @@ songAction10 = ActionSound(player, 10)
 ### --- Create a TriggerObject object for each trigger in the toy. Each trigger object takes a
 #  list of one or more ActionGroupObjects. An ActionGroup contains a time duration (in seconds) and an arbitrary
 #  number of ActionObjects (e.g. ActionSound, ActionAnimation, ActionServo) that will occur simultaneously
-#  when triggered, and persist for the time duration specified.
+#  when triggered, and persist for the time duration specified. You can have just one action.
 
-PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A
+# First we will create the properties for each trigger object. 
+
+PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A, This button can be pressed 3 times to execute 3 different action groups
 ACTIONS_A   = [ ActionGroup(5, songAction1, chaseBlueAnimation),        # List of action groups associaciated with Button A
                 ActionGroup(8, songAction2, rainbowAnimation),          # Each action group plays a sound and an LED animation
                 ActionGroup(12, songAction3, chaseRedAnimation)]
@@ -123,11 +125,14 @@ ACTIONS_PING   = [  ActionGroup(6, songAction8, chaseBlueAnimation, servoAction2
                     ActionGroup(6, songAction9, rainbowAnimation, servoAction2),
                     ActionGroup(6, songAction10, chaseRedAnimation, servoAction2) ]
 
-#Create a Ping trigger object
+#Create a Ping trigger object. The first property is the name, etc. 
+
 Ping1 = PingTrigger ("Ping1", board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
 
 # Create button objects on Pins A and B. The "allow_restart" keyword determines what happens when the button is pushed
 # twice sequentially. If "allow_restart" is True, the next action group will start from the beginning. Otherwise all actions will stop
+# look in Debra's lib/trigger_object/button_trigger.py for arggument list
+
 ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A chooses its action groups randomly
 ButtonB = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)                       # Button B iterates through its action groups sequentially (the default)
 
