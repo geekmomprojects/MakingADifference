@@ -1,23 +1,23 @@
-# Import statments
+# Import necessary libraries
 import board
 import busio
 import time
 import pwmio
 
-# Import servo motor module. Only necessary if toy incorporates servos
+# Import servo motor module(library). Only necessary if toy incorporates servos. 
 from adafruit_motor import servo
 
-# Import Sound Player module. Only necessary if toy plays sounds
+# Import Sound Player module(library). Only necessary if toy plays sounds
 from dyplayer import DYPlayer
 
-# Import LED animation modules. Only necessary if toy contains LEDs
+# Import LED animation modules(libraries). Only necessary if toy contains LEDs
 import neopixel
 from adafruit_led_animation.animation.chase import Chase
 from adafruit_led_animation.animation.rainbow import Rainbow
 from adafruit_led_animation.animation.comet import Comet
 from adafruit_led_animation.animation.colorcycle import ColorCycle
 
-# Import modules all action types used (can omit any that are not used)
+# Import modules(libraries) all action types used (can omit any that are not used)
 from action_object.action_servo import ActionServo
 from action_object.action_animation import ActionAnimation
 from action_object.action_sound import ActionSound
