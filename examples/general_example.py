@@ -8,7 +8,7 @@ import pwmio
 from adafruit_motor import servo
 
 # Import Sound Player module(library). Only necessary if toy plays sounds
-from dyplayer import DYPlayer
+from dyplayer import DYPlayer                              # Debra's library
 
 # Import LED animation modules(libraries). Only necessary if toy contains LEDs
 import neopixel
@@ -17,13 +17,13 @@ from adafruit_led_animation.animation.rainbow import Rainbow
 from adafruit_led_animation.animation.comet import Comet
 from adafruit_led_animation.animation.colorcycle import ColorCycle
 
-# Import modules(libraries) all action types used (can omit any that are not used)
-from action_object.action_servo import ActionServo
+# Import modules(libraries) all action types used (can omit any that are not used)   # Debra's library
+from action_object.action_servo import ActionServo         
 from action_object.action_animation import ActionAnimation
 from action_object.action_sound import ActionSound
 from action_object.action_group import ActionGroup
 
-# Import all triggers used (can omit any that are not used)
+# Import all triggers used (can omit any that are not used)                          # Debra's library
 from trigger_object import TriggerObject
 from trigger_object.button_trigger import ButtonTrigger
 from trigger_object.toggle_trigger import ToggleTrigger
@@ -32,18 +32,20 @@ from trigger_object.ir_trigger import IrTrigger
 
 
 
-### --- Create the Neopixel object and animation(s).
+### --- Create the Neopixel object storing and defining the strip properties.
 #  Replace num_pixels with thenumber of pixels corresponding to your hardware
 num_pixels = 9
 pixels = neopixel.NeoPixel(board.GP27, num_pixels, brightness = 0.2, auto_write=False)
 pixels.fill((0,0,0))
 pixels.show()
 
-chase_blue = Chase(pixels, speed=0.3, size=1, spacing=2, color=(0,0,255))
-chase_red  = Chase(pixels, speed=0.3, size=1, spacing=1, color=(255,0,0))
-rainbow    = Rainbow(pixels, speed=0.3)
+### --- Creating objects of type animation and specifying their properties. (pixels, which was defined on line 38, is the first argument of the animation object)
 
-### --- Create animation action objects for use in ActionGroups
+chase_blue = Chase(pixels, speed=0.3, size=1, spacing=2, color=(0,0,255))  ### creating a chase object that will run an animation stored in a variable called chase_blue
+chase_red  = Chase(pixels, speed=0.3, size=1, spacing=1, color=(255,0,0))  ### creating a chase object that will run an animation stored in a variable called chase_red
+rainbow    = Rainbow(pixels, speed=0.3)                                    ### creating a rainbow object that will run an animation stored in a variable called rainbow
+
+### --- Create animation action objects for use in ActionGroups. These action objects take an animation as their argument. The ActionAnimation is a class inside the Action_Object library Debra wrote
 chaseBlueAnimation  = ActionAnimation(chase_blue)
 rainbowAnimation    = ActionAnimation(rainbow)
 chaseRedAnimation   = ActionAnimation(chase_red)
