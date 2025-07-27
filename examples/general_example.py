@@ -105,6 +105,7 @@ songAction10 = ActionSound(player, 10)
 
 # First we will create the properties for each trigger object. 
 
+
 PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A, This button can be pressed 3 times to execute 3 different action groups
 ACTIONS_A   = [ ActionGroup(5, songAction1, chaseBlueAnimation),        # List of action groups associaciated with Button A
                 ActionGroup(8, songAction2, rainbowAnimation),          # Each action group plays a sound and an LED animation
@@ -125,7 +126,7 @@ ACTIONS_PING   = [  ActionGroup(6, songAction8, chaseBlueAnimation, servoAction2
                     ActionGroup(6, songAction9, rainbowAnimation, servoAction2),
                     ActionGroup(6, songAction10, chaseRedAnimation, servoAction2) ]
 
-#Create a Ping trigger object. The first property is the name, etc. 
+#Create a Ping trigger object using the definitions we stated above. The first property is the name, etc. 
 
 Ping1 = PingTrigger ("Ping1", board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
 
