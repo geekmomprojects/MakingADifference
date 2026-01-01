@@ -21,6 +21,6 @@ class ActionSound(Action):
     def action(self):
         if self.track_duration >= 0 and self.active_duration() > self.track_duration:
             self.stop_action()
-            return True
-        else:
             return False
+        else:
+            return True
