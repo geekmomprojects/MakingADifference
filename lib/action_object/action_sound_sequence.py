@@ -2,7 +2,11 @@ from action_object import Action
 
 from dyplayer import DYPlayer
 
-# An action class to play a track. Takes a DYPlayer object and track number
+# An action class to play a sequence of tracks in a row.
+# player is the sound player object
+# track_list is a list of tracks to play in the order specified, e.g. [3,2,4] will
+# play tracks 3, 2, and 4 in order
+# duration_list is a list containing number of seconds to play each track for, e.g. [4.5, 3, 6]
 class ActionSoundSequence(Action):
     def __init__(self, player, track_list, duration_list):
 
