@@ -176,11 +176,12 @@ while True:
             print("")
             print(trigger.name, "was triggered.")
             if current_trigger is not None and trigger != current_trigger:  # There is a currently a different active trigger
-                current_trigger.stop()                                      # Stop the current trigge
+                current_trigger.stop(advance_action=False)                   # Stop the current trigge
             current_trigger = trigger
             if current_trigger == focus_trigger:                                    # User selected the correct trigger
                 print("the correct trigger was chosen.")
                 is_correct_trigger = True
+                current_trigger.advance()
                 if current_trigger == instruction_trigger:
                     focus_trigger = trigger.get_current_action_data("target")
                 else:
