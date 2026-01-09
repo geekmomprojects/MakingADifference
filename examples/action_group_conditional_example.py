@@ -100,17 +100,20 @@ soundPressC    = ActionSound(player, 14)  # 3 seconds long - "Press button C"
 ACTIONS_A   = [ ActionGroup(5, soundPressB, chaseBlueAnimation),
                 ActionGroup(5, soundPressC, chaseGreenAnimation)]
 
-# Sound action objects for the response triggers
+# Create action groups for when the user presses buttons B and C correctly
 soundTouchedB   = ActionSound(player, 18) # 3 seconds long - "You pressed button B"
 actionTouchedB  = ActionGroup(5, soundTouchedB, chaseBlueAnimation)
 
 soundTouchedC   = ActionSound(player, 19) # 3 seconds long - "You touched button C"
 actionTouchedC  = ActionGroup(5, soundTouchedC, chaseRedAnimation)
 
+# Create an action group that tells the user to try again
 soundTryAgain   = ActionSound(player, 2)  # 3 seconds long - "try again"
 actionTryAgain  = ActionGroup(3, soundTryAgain, rainbowAnimation)
 
 # Create a variable to determine which action in a conditional action group should be played
+# the "is_correct_trigger" variable is True or False depending on whether the coorrect
+# trigger was selected
 is_correct_trigger = False
 
 # If it's the correct button do the first action group, otherwise do the second
@@ -120,6 +123,8 @@ def get_action_index():
     else:
         return 1
 
+# Create conditional Action Groups that will play a response that tells the
+# user they pressed the correct button, or tells the user to try again
 ACTIONS_B = ActionGroupConditional(get_action_index, [actionTouchedB, actionTryAgain])
 ACTIONS_C = ActionGroupConditional(get_action_index, [actionTouchedC, actionTryAgain])
 
