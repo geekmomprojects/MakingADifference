@@ -6,7 +6,9 @@ import time
 # for a specific amount of time (duration), but could run until a specific trigger
 # instead (to be implemented)
 class ActionGroup:
-    def __init__(self, duration, *actions):
+    INFINITE = -1
+
+    def __init__(self, duration, *actions):  #If duration is None, actions run until interrupted
         # Validate arguments
         for a in actions:
             #print(a, type(a))
@@ -14,13 +16,14 @@ class ActionGroup:
                 print("cannot convert ", a, " to type action")
                 raise TypeError()
 
-        if duration <= 0:
+        if duration != ActionGroup.INFINITE and duration <= 0:
             print("Duration must be a number greater than zero")
             raise ValueError()
 
         # Assign member variables
         self.action_list        = list(actions)
         self.duration           = duration  # Must be number (seconds) for the action to take place. TBD - add different end condition
+                                            # If duration is none, the action_group plays forever until interrupted
         self.action_start_time  = -1
         self.data               = {}        # Dictionary for storing associated data (e.g. target trigger object)
 
@@ -36,17 +39,26 @@ class ActionGroup:
             a.start_action()
         self.action_start_time = time.monotonic()
 
+    # should only to call this if action_group is active
+    def runtime_elapsed(self):
+        if self.duration == ActionGroup.INFINITE or time.monotonic() - self.action_start_time < self.duration:
+            return False
+        else:
+            return True
+
+
     # must be called repeatedly in main loop while group is active
     # will update the actions in the list
     def do_action(self):
         if self.is_active():
-            if time.monotonic() - self.action_start_time < self.duration:
+            if self.runtime_elapsed():
+                self.stop()
+                return False
+            else:
                 for a in self.action_list:
                     a.do_action()
                 return True
-            else:
-                self.stop()
-                return False
+
 
     # Stop all the actions in the list
     def stop(self):
