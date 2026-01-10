@@ -32,8 +32,8 @@ class TriggerObject:
                                                         # or randomly (True)
         self.action_index           = 0
         self.current_action         = self.action_groups[self.action_index] if len(self.action_groups) > 0 else None
-		self.start_callback         = None
-		self.stop_callback          = None
+        self.start_callback         = None
+        self.stop_callback          = None
 
 
     # Must be overridden in child class
@@ -79,7 +79,7 @@ class TriggerObject:
     def stop(self, set_next_action=True):
         print("stopping trigger ", self.name)
 		# Invoke callback function if any exists
-		if self.stop_callback is not None:
+        if self.stop_callback is not None:
             self.stop_callback(self)
         if self.current_action is not None:
             self.current_action.stop()
@@ -108,13 +108,21 @@ class TriggerObject:
         else:
             return self.current_action.do_action()
 
+    def set_current_action(self, index):
+        if self.is_active():
+            raise AssertionError("cannot change action while active")
+        if index < 0 or index >= len(self.action_groups):
+            raise IndexError("index out of range in action group list")
+        self.action_index   = index
+        self.current_action = self.action_groups[self.action_index]
+
     def get_current_action_data(self, key):
         result = None
         if self.current_action is not None:
             result = self.current_action.get_data(key)
         return result
-		
-	def set_start_callback(self, callback_func):
+
+    def set_start_callback(self, callback_func):
         self.start_callback = callback_func
 
     def set_stop_callback(self, callback_func):
@@ -134,7 +142,6 @@ class TargetedTriggerObject(TriggerObject):
             return self.targets[self.action_index]
 
 '''
-
 
 
 
