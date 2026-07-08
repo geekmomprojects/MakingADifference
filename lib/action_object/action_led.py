@@ -8,7 +8,7 @@ class ActionLED(Action):
 		self.led = digitalio.DigitalInOut(ledPin)
 		self.led.direction = digitalio.Direction.OUTPUT
 		self.led.value = False
-		super().__init__(name="LEDPin" + str(ledPin.__hash__))
+		super().__init__(name="LEDPin" + str(ledPin).replace('board.',''))
 		
 	# Turn the LED on when action starts
 	def on_start(self):
