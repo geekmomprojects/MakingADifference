@@ -1,5 +1,3 @@
-#import board
-#import busio
 import time
 
 # A base class for peripherals (motor/animation/sound, etc...) that activate when
@@ -41,8 +39,7 @@ class Action:
     # Returns true if action occurred, false if not
     def action(self):
         raise NotImplementedError()
-        return False
-	
+
     # Call this method repeatedly in the code's main loop to perform the
     # Peripheral's action repeatedly in a loop
     def do_action(self):
@@ -58,12 +55,4 @@ class Action:
 
     # Returns the time (in seconds) since the last action
     def time_since_last_action(self):
-        return time.monotonic() - self.action_start_time
-
-
-
-
-
-
-
-
+        return time.monotonic() - self.last_action_time

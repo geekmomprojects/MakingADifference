@@ -8,7 +8,7 @@ import time
 class ActionGroup:
     INFINITE = -1
 
-    def __init__(self, duration, *actions):  #If duration is None, actions run until interrupted
+    def __init__(self, duration, *actions):  # If duration is ActionGroup.INFINITE, actions run until interrupted
         # Validate arguments
         for a in actions:
             #print(a, type(a))
@@ -23,7 +23,7 @@ class ActionGroup:
         # Assign member variables
         self.action_list        = list(actions)
         self.duration           = duration  # Must be number (seconds) for the action to take place. TBD - add different end condition
-                                            # If duration is none, the action_group plays forever until interrupted
+                                            # If duration is ActionGroup.INFINITE, the action_group plays forever until interrupted
         self.action_start_time  = -1
         self.data               = {}        # Dictionary for storing associated data (e.g. target trigger object)
 
@@ -71,5 +71,5 @@ class ActionGroup:
         self.data[key] = value
 
     def get_data(self, key):
-        return self.data[key]
+        return self.data.get(key)    # Returns None if key was never set
 

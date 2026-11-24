@@ -1,7 +1,5 @@
 from action_object import Action
 
-from dyplayer import DYPlayer
-
 # An action class to play a track. Takes a DYPlayer object and track number
 class ActionSound(Action):
     def __init__(self, player, track_num, track_duration=-1):

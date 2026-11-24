@@ -39,7 +39,6 @@ class TriggerObject:
     # Must be overridden in child class
     def is_triggered(self):
         raise NotImplementedError()
-        return False
 
     # Override this function with any updates that must be called repeatedly
     def update(self):
@@ -69,7 +68,7 @@ class TriggerObject:
 
     def start(self):
         print("starting trigger ", self.name)
-		# Invoke callback function if any exists
+        # Invoke callback function if any exists
         if self.start_callback is not None:
             self.start_callback(self)
         if self.current_action is not None:
@@ -78,7 +77,7 @@ class TriggerObject:
 
     def stop(self, set_next_action=True):
         print("stopping trigger ", self.name)
-		# Invoke callback function if any exists
+        # Invoke callback function if any exists
         if self.stop_callback is not None:
             self.stop_callback(self)
         if self.current_action is not None:
@@ -127,24 +126,3 @@ class TriggerObject:
 
     def set_stop_callback(self, callback_func):
         self.stop_callback = callback_func
-
-'''
-class TargetedTriggerObject(TriggerObject):
-    def __init__(self, name, actions, targets, allow_restart=True, random_actions=False):
-        super().__init__(name, actions, allow_restart, random_actions)
-
-
-
-    def get_target(self):
-        if self.action_index < 0:
-            return None
-        else:
-            return self.targets[self.action_index]
-
-'''
-
-
-
-
-
-

@@ -19,7 +19,6 @@
 import board
 import time
 import busio
-import struct
 
 
 class PlayState():
@@ -113,9 +112,6 @@ class DYPlayer(object):
     return val
 
   # --- takes bytearray and appends checksum byte ------------------------------
-  def appendChecksum(self, data, length):
-      return data + bytes([self.checksum(data, length)])
-
   def appendChecksum(self, data):
       return data + bytes([self.checksum(data, len(data))])
 

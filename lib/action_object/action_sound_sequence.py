@@ -1,7 +1,5 @@
 from action_object import Action
 
-from dyplayer import DYPlayer
-
 # An action class to play a sequence of tracks in a row.
 # player is the sound player object
 # track_list is a list of tracks to play in the order specified, e.g. [3,2,4] will

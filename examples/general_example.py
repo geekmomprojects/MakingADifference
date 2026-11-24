@@ -1,7 +1,6 @@
 # Import necessary libraries
 import board
 import busio
-import time
 import pwmio
 
 # Import servo motor module(library). Only necessary if toy incorporates servos. 
@@ -14,8 +13,6 @@ from dyplayer import DYPlayer                              # Debra's library
 import neopixel
 from adafruit_led_animation.animation.chase import Chase
 from adafruit_led_animation.animation.rainbow import Rainbow
-from adafruit_led_animation.animation.comet import Comet
-from adafruit_led_animation.animation.colorcycle import ColorCycle
 
 # Import modules(libraries) all action types used (can omit any that are not used)   # Debra's library
 from action_object.action_servo import ActionServo         
@@ -24,7 +21,6 @@ from action_object.action_sound import ActionSound
 from action_object.action_group import ActionGroup
 
 # Import all triggers used (can omit any that are not used)                          # Debra's library
-from trigger_object import TriggerObject
 from trigger_object.button_trigger import ButtonTrigger
 from trigger_object.toggle_trigger import ToggleTrigger
 from trigger_object.ping_trigger import PingTrigger

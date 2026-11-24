@@ -1,15 +1,12 @@
 # Import statments
 import board
 import busio
-import time
-import pwmio
 
 
 # Import Sound Player module. Only necessary if toy plays sounds
 from dyplayer import DYPlayer
 
 # Import all triggers used (can omit any that are not used)
-from trigger_object import TriggerObject
 from trigger_object.button_trigger import ButtonTrigger
 
 from action_object.action_sound import ActionSound

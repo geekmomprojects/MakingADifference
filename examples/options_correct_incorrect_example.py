@@ -1,12 +1,6 @@
 # Import statments
 import board
 import busio
-import time
-import pwmio
-import random
-
-# Import servo motor module. Only necessary if toy incorporates servos
-from adafruit_motor import servo
 
 # Import Sound Player module. Only necessary if toy plays sounds
 from dyplayer import DYPlayer
@@ -23,7 +17,6 @@ from action_object.action_sound import ActionSound
 from action_object.action_group import ActionGroup
 
 # Import all triggers used (can omit any that are not used)
-from trigger_object import TriggerObject
 from trigger_object.button_trigger import ButtonTrigger
 
 
@@ -127,6 +120,7 @@ instruction_trigger = ButtonA
 # Variables needed for the main look to track the correct button to press
 current_trigger = None                  # button corresponding to the current song or animation playing (None if no song/animation playing)
 focus_trigger   = instruction_trigger   # The trigger that currently has the focus. Should initialize with instruction trigger
+instruction_index = 0                   # Index (in ACTIONS_A) of the instruction most recently given to the user
 
 
 
@@ -157,9 +151,9 @@ while True:
             current_trigger = trigger
             if current_trigger == focus_trigger:                                    # User selected the correct trigger
                 print("the correct trigger was chosen.")
-                is_correct_trigger = True
                 if current_trigger == instruction_trigger:
                     current_trigger.advance()
+                    instruction_index = current_trigger.action_index            # Remember which instruction is being given
                     focus_trigger = current_trigger.get_current_action_data("target")
                 else:
                     current_trigger.set_current_action(ACTION_CORRECT)
@@ -168,7 +162,10 @@ while True:
                 print("expected trigger ", focus_trigger.name, " but user pressed ", current_trigger.name)
                 if current_trigger.is_active():
                     current_trigger.stop()
-                current_trigger.set_current_action(ACTION_INCORRECT)
+                if current_trigger == instruction_trigger:                      # User pressed the instructions button instead of the target,
+                    current_trigger.set_current_action(instruction_index)       #  so repeat the same instruction (the target hasn't changed)
+                else:
+                    current_trigger.set_current_action(ACTION_INCORRECT)
 
             current_trigger.respond_to_trigger()
             break                                                           # Don't allow more than one simultaneous trigger

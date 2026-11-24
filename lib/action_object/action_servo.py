@@ -1,7 +1,6 @@
 from action_object import Action
 
 import math
-from adafruit_motor import servo
 
 
 # An action class that controls a servo. Can specify the start/end angle and the period
@@ -12,7 +11,7 @@ class ActionServo(Action):
         self.start_angle = start_angle
         self.end_angle = end_angle
         self.period = period
-        self.sevo_pos = start_angle
+        self.servo_pos = start_angle
         super().__init__(name=name)
 
     def action(self):
