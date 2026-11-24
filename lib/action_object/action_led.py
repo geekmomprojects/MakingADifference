@@ -20,5 +20,5 @@ class ActionLED(Action):
 
     # No action needed - LED turns on/off with on_start, on_stop functions
     # but still must override this function for the class to work
-    def action(self):
+    def on_update(self):
         return True

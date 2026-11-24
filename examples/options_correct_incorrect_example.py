@@ -35,10 +35,10 @@ rainbow         = Rainbow(pixels, speed=0.04, period =.6)
 
 
 ### --- Create animation action objects for use in ActionGroups
-chaseBlueAnimation      = ActionAnimation(chase_blue)
-chaseRedAnimation       = ActionAnimation(chase_red)
-chaseGreenAnimation     = ActionAnimation(chase_green)
-rainbowAnimation        = ActionAnimation(rainbow)
+chase_blue_animation      = ActionAnimation(chase_blue)
+chase_red_animation       = ActionAnimation(chase_red)
+chase_green_animation     = ActionAnimation(chase_green)
+rainbow_animation        = ActionAnimation(rainbow)
 
 ### --- End Neopixel/animation initialization
 print("Code is starting")
@@ -62,21 +62,21 @@ player = DYPlayer(uart=player_uart)
 ### --- Create sound action objects to play different tracks
 
 # Sound action objects for the instructions to the user to activate the different triggers
-soundPressB     = ActionSound(player, 13) # 3 seconds long - "Press button B"
-soundPressC     = ActionSound(player, 14) # 3 seconds long - "Press button C"
+sound_press_b     = ActionSound(player, 13) # 3 seconds long - "Press button B"
+sound_press_c     = ActionSound(player, 14) # 3 seconds long - "Press button C"
 
-ACTIONS_A   = [ ActionGroup(5, soundPressB),
-                ActionGroup(5, soundPressC)]
+ACTIONS_A   = [ ActionGroup(5, sound_press_b),
+                ActionGroup(5, sound_press_c)]
 
 # Sound action objects for the response triggers
-soundTouchedB   = ActionSound(player, 18) # 3 seconds long - "You pressed button B"
-actionTouchedB  = ActionGroup(5, soundTouchedB, chaseBlueAnimation)
+sound_touched_b   = ActionSound(player, 18) # 3 seconds long - "You pressed button B"
+action_touched_b  = ActionGroup(5, sound_touched_b, chase_blue_animation)
 
-soundTouchedC   = ActionSound(player, 19) # 3 seconds long - "You touched button C"
-actionTouchedC  = ActionGroup(5, soundTouchedC, chaseRedAnimation)
+sound_touched_c   = ActionSound(player, 19) # 3 seconds long - "You touched button C"
+action_touched_c  = ActionGroup(5, sound_touched_c, chase_red_animation)
 
-soundTryAgain   = ActionSound(player, 10)  # 3 seconds long - "try again"
-actionTryAgain  = ActionGroup(3, soundTryAgain, rainbowAnimation)
+sound_try_again   = ActionSound(player, 10)  # 3 seconds long - "try again"
+action_try_again  = ActionGroup(3, sound_try_again, rainbow_animation)
 
 
 # In the action groups for buttons B and C, the action for an incorrect answer
@@ -85,37 +85,37 @@ actionTryAgain  = ActionGroup(3, soundTryAgain, rainbowAnimation)
 ACTION_INCORRECT    = 0
 ACTION_CORRECT      = 1
 
-ACTIONS_B = [actionTryAgain, actionTouchedB]
-ACTIONS_C = [actionTryAgain, actionTouchedC]
+ACTIONS_B = [action_try_again, action_touched_b]
+ACTIONS_C = [action_try_again, action_touched_c]
 
 
 # Button A is the button that gives the instructions to the user
 PIN_A       = board.GP16
 # Create the instructions TriggerObject
-ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
+button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
 
 # Button B
 PIN_B       = board.GP17                # Pi Pico pin attached to button
-ButtonB =   ButtonTrigger("Button B", PIN_B, ACTIONS_B)
+button_b =   ButtonTrigger("Button B", PIN_B, ACTIONS_B)
 
 PIN_C       = board.GP18                # Pi Pico pin attached to toggle switch
-ButtonC =   ButtonTrigger("Button C", PIN_C, ACTIONS_C)
+button_c =   ButtonTrigger("Button C", PIN_C, ACTIONS_C)
 
 # Create Response Trigger Objects
 
-# Since ButtonA is the "instructions" button, we are going to add a "target" trigger to each of its
+# Since button_a is the "instructions" button, we are going to add a "target" trigger to each of its
 # ActionGroup objects. That target is the specific trigger the instructions tell the child to press
-ACTIONS_A[0].set_data("target", ButtonB)
-ACTIONS_A[1].set_data("target", ButtonC)
+ACTIONS_A[0].set_data("target", button_b)
+ACTIONS_A[1].set_data("target", button_c)
 
 # Create a list of trigger objects
-trigger_objects      = [ ButtonA,
-                         ButtonB,
-                         ButtonC]
+trigger_objects      = [ button_a,
+                         button_b,
+                         button_c]
 
 
 # Assign the value of the variable "instruction_trigger" to the trigger that provides instructions to the user
-instruction_trigger = ButtonA
+instruction_trigger = button_a
 
 # Variables needed for the main look to track the correct button to press
 current_trigger = None                  # button corresponding to the current song or animation playing (None if no song/animation playing)
@@ -153,19 +153,19 @@ while True:
                 print("the correct trigger was chosen.")
                 if current_trigger == instruction_trigger:
                     current_trigger.advance()
-                    instruction_index = current_trigger.action_index            # Remember which instruction is being given
-                    focus_trigger = current_trigger.get_current_action_data("target")
+                    instruction_index = current_trigger.group_index            # Remember which instruction is being given
+                    focus_trigger = current_trigger.get_current_group_data("target")
                 else:
-                    current_trigger.set_current_action(ACTION_CORRECT)
+                    current_trigger.set_current_group(ACTION_CORRECT)
                     focus_trigger = instruction_trigger                         # Correct answer, next press should be instructions
             else:
                 print("expected trigger ", focus_trigger.name, " but user pressed ", current_trigger.name)
                 if current_trigger.is_active():
                     current_trigger.stop()
                 if current_trigger == instruction_trigger:                      # User pressed the instructions button instead of the target,
-                    current_trigger.set_current_action(instruction_index)       #  so repeat the same instruction (the target hasn't changed)
+                    current_trigger.set_current_group(instruction_index)       #  so repeat the same instruction (the target hasn't changed)
                 else:
-                    current_trigger.set_current_action(ACTION_INCORRECT)
+                    current_trigger.set_current_group(ACTION_INCORRECT)
 
             current_trigger.respond_to_trigger()
             break                                                           # Don't allow more than one simultaneous trigger

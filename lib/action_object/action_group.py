@@ -1,4 +1,4 @@
-from action_object import Action
+from action_object import Action, report_old_name
 import time
 
 # Coordinates the actions of a bunch of peripherals to start/stop at the same
@@ -11,23 +11,18 @@ class ActionGroup:
     def __init__(self, duration, *actions):  # If duration is ActionGroup.INFINITE, actions run until interrupted
         # Validate arguments
         for a in actions:
-            #print(a, type(a))
             if not isinstance(a, Action):
-                print("cannot convert ", a, " to type action")
-                raise TypeError()
+                raise TypeError("ActionGroup cannot use " + str(a) + " because it is not an Action")
 
         if duration != ActionGroup.INFINITE and duration <= 0:
-            print("Duration must be a number greater than zero")
-            raise ValueError()
+            raise ValueError("ActionGroup duration must be a number greater than zero (or ActionGroup.INFINITE)")
 
         # Assign member variables
         self.action_list        = list(actions)
-        self.duration           = duration  # Must be number (seconds) for the action to take place. TBD - add different end condition
-                                            # If duration is ActionGroup.INFINITE, the action_group plays forever until interrupted
+        self.duration           = duration  # Number of seconds the actions play for.
+                                            # If duration is ActionGroup.INFINITE, the group plays until it is stopped
         self.action_start_time  = -1
         self.data               = {}        # Dictionary for storing associated data (e.g. target trigger object)
-
-        #print(self.action_list)
 
     # The value of action_start_time is -1 if group is not currently active
     def is_active(self):
@@ -36,7 +31,7 @@ class ActionGroup:
     # Start all the actions in the list
     def start(self):
         for a in self.action_list:
-            a.start_action()
+            a.start()
         self.action_start_time = time.monotonic()
 
     # should only to call this if action_group is active
@@ -46,25 +41,25 @@ class ActionGroup:
         else:
             return True
 
-
-    # must be called repeatedly in main loop while group is active
-    # will update the actions in the list
-    def do_action(self):
+    # Must be called repeatedly in main loop while group is active.
+    # Updates all the actions in the list.
+    # Returns True while the group is still playing, False once it has finished
+    def update(self):
         if self.is_active():
             if self.runtime_elapsed():
                 self.stop()
                 return False
             else:
                 for a in self.action_list:
-                    a.do_action()
+                    a.update()
                 return True
-
+        return False
 
     # Stop all the actions in the list
     def stop(self):
         if self.is_active():
             for a in self.action_list:
-                a.stop_action()
+                a.stop()
             self.action_start_time = -1
 
     def set_data(self, key, value):
@@ -73,3 +68,7 @@ class ActionGroup:
     def get_data(self, key):
         return self.data.get(key)    # Returns None if key was never set
 
+    # --- Old names (version 1). They still work, but please use the new names.
+    def do_action(self):
+        report_old_name("do_action()", "update()")
+        return self.update()

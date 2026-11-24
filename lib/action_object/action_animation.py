@@ -6,7 +6,7 @@ class ActionAnimation(Action):
         self.animation = animation
         super().__init__(name=animation.__class__.__name__)
 
-    def action(self):
+    def on_update(self):
         return self.animation.animate()
 
     # When animation is stopped, set pixels to black and reset animation

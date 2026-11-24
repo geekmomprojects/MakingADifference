@@ -40,9 +40,9 @@ chase_red  = Chase(pixels, speed=0.3, size=1, spacing=1, color=(255,0,0))
 rainbow    = Rainbow(pixels, speed=0.3)
 
 ### --- Create animation action objects for use in ActionGroups
-chaseBlueAnimation  = ActionAnimation(chase_blue)
-rainbowAnimation    = ActionAnimation(rainbow)
-chaseRedAnimation   = ActionAnimation(chase_red)
+chase_blue_animation  = ActionAnimation(chase_blue)
+rainbow_animation    = ActionAnimation(rainbow)
+chase_red_animation   = ActionAnimation(chase_red)
 
 ### --- End Neopixel/animation initialization
 print("Code is starting")
@@ -75,68 +75,68 @@ servo1 = servo.Servo(pwmio.PWMOut(SERVO_PIN_1, duty_cycle=2 ** 15, frequency=50)
 
 ### --- Create servo action object(s) that specifies a servo and its motion
 # Different action objects can use the same servo with different movements
-servoAction1 = ActionServo("Servo1Motion1", servo1, start_angle=20, end_angle=160, period=3)   # Wide slow steep motion
-servoAction2 = ActionServo("Servo1Motion2", servo1, start_angle=90, end_angle=120, period=1)    # Shorter faster sweep motion
+servo_action_1 = ActionServo("Servo1Motion1", servo1, start_angle=20, end_angle=160, period=3)   # Wide slow steep motion
+servo_action_2 = ActionServo("Servo1Motion2", servo1, start_angle=90, end_angle=120, period=1)    # Shorter faster sweep motion
 
 ### --- Create sound action objects to play different tracks
 
 # Sound action objects for the instructions to the user to activate the different triggers
-soundPressB     = ActionSound(player, 13) # 3 seconds long - "Press button B"
-soundToggleC    = ActionSound(player, 14) # 3 seconds long - "Toggle switch C"
-songActivateP   = ActionSound(player, 15) # 3 seconds long - "Activate the ping sensor"
+sound_press_b     = ActionSound(player, 13) # 3 seconds long - "Press button B"
+sound_toggle_c    = ActionSound(player, 14) # 3 seconds long - "Toggle switch C"
+song_activate_p   = ActionSound(player, 15) # 3 seconds long - "Activate the ping sensor"
 
 # Sound action objects for the response triggers
-soundTouchedB   = ActionSound(player, 18) # 3 seconds long - "You pressed button B"
-soundToggledC   = ActionSound(player, 19) # 3 seconds long - "You toggled switch C"
-soundActivatedP = ActionSound(player, 20) # 3 seconds long - "You activated the ping sensor"
+sound_touched_b   = ActionSound(player, 18) # 3 seconds long - "You pressed button B"
+sound_toggled_c   = ActionSound(player, 19) # 3 seconds long - "You toggled switch C"
+sound_activated_p = ActionSound(player, 20) # 3 seconds long - "You activated the ping sensor"
 
 
 ### --- Create a TriggerObject object for each button and or toggle switch on the board.
 
 # Button A is the button that gives the instructions to the user
 PIN_A       = board.GP16
-ACTIONS_A   = [ ActionGroup(5, soundPressB, chaseBlueAnimation),
-                ActionGroup(5, soundToggleC, rainbowAnimation),
-                ActionGroup(5, songActivateP, chaseRedAnimation)]
+ACTIONS_A   = [ ActionGroup(5, sound_press_b, chase_blue_animation),
+                ActionGroup(5, sound_toggle_c, rainbow_animation),
+                ActionGroup(5, song_activate_p, chase_red_animation)]
 
 # Create the instructions TriggerObject
-ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
+button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
 
 # Button B activates a motor when pressed
 PIN_B       = board.GP17                # Pi Pico pin attached to button
-ACTIONS_B   = [ ActionGroup(4, soundTouchedB, chaseBlueAnimation, servoAction1),
-                ActionGroup(4, soundTouchedB, rainbowAnimation, servoAction1),
-                ActionGroup(4, soundTouchedB, chaseRedAnimation, servoAction1) ]
+ACTIONS_B   = [ ActionGroup(4, sound_touched_b, chase_blue_animation, servo_action_1),
+                ActionGroup(4, sound_touched_b, rainbow_animation, servo_action_1),
+                ActionGroup(4, sound_touched_b, chase_red_animation, servo_action_1) ]
 
 # Toggle switch C
 PIN_C       = board.GP18                # Pi Pico pin attached to toggle switch
-ACTIONS_C   = [ ActionGroup(4, soundToggledC, rainbowAnimation) ]
+ACTIONS_C   = [ ActionGroup(4, sound_toggled_c, rainbow_animation) ]
 
 # Action groups triggered by the ping sensor
-ACTIONS_PING   = [  ActionGroup(4, soundActivatedP, chaseBlueAnimation, servoAction1),
-                    ActionGroup(4, soundActivatedP, rainbowAnimation, servoAction1),
-                    ActionGroup(4, soundActivatedP, chaseRedAnimation, servoAction1) ]
+ACTIONS_PING   = [  ActionGroup(4, sound_activated_p, chase_blue_animation, servo_action_1),
+                    ActionGroup(4, sound_activated_p, rainbow_animation, servo_action_1),
+                    ActionGroup(4, sound_activated_p, chase_red_animation, servo_action_1) ]
 
 # Create Response Trigger Objects
-ButtonB = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)
-ToggleC = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=True, toggle_both=False) # both ways or only when flipped one way (toggle_both keyword)
-Ping1 = PingTrigger ("Ping1",board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)
+button_b = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)
+toggle_c = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=True, toggle_both=False) # both ways or only when flipped one way (toggle_both keyword)
+ping_1 = PingTrigger ("Ping1",board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)
 
-# Since ButtonA is the "instructions" button, we are going to add a "target" trigger to each of its
+# Since button_a is the "instructions" button, we are going to add a "target" trigger to each of its
 # ActionGroup objects. That target is the specific trigger the instructions tell the child to press
-ACTIONS_A[0].set_data("target", ButtonB)
-ACTIONS_A[1].set_data("target", ToggleC)
-ACTIONS_A[2].set_data("target", Ping1)
+ACTIONS_A[0].set_data("target", button_b)
+ACTIONS_A[1].set_data("target", toggle_c)
+ACTIONS_A[2].set_data("target", ping_1)
 
 # Create a list of trigger objects
-trigger_objects      = [ ButtonA,
-                         ButtonB,
-                         ToggleC,
-                         Ping1]  # Toggle trigger has the option to toggle when flipped
+trigger_objects      = [ button_a,
+                         button_b,
+                         toggle_c,
+                         ping_1]  # Toggle trigger has the option to toggle when flipped
 
 
 # Assign the value of the variable "instruction_trigger" to the trigger that provides instructions to the user
-instruction_trigger = ButtonA
+instruction_trigger = button_a
 
 
 # Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects
@@ -169,7 +169,7 @@ while True:
                 trigger.start()                                             # New trigger responds to activation
                 current_trigger = trigger
                 if trigger == instruction_trigger:                          # Instructions trigger activated - figure out new target/focus trigger
-                    new_focus = trigger.get_current_action_data("target")
+                    new_focus = trigger.get_current_group_data("target")
                     if new_focus is not None:
                         focus_trigger = new_focus
                 else:

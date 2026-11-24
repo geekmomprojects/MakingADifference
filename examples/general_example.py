@@ -42,9 +42,9 @@ chase_red  = Chase(pixels, speed=0.3, size=1, spacing=1, color=(255,0,0))  ### c
 rainbow    = Rainbow(pixels, speed=0.3)                                    ### creating a rainbow object that will run an animation stored in a variable called rainbow
 
 ### --- Create animation action objects for use in ActionGroups. These action objects take an animation as their argument. The ActionAnimation is a class inside the Action_Object library Debra wrote
-chaseBlueAnimation  = ActionAnimation(chase_blue)
-rainbowAnimation    = ActionAnimation(rainbow)
-chaseRedAnimation   = ActionAnimation(chase_red)
+chase_blue_animation  = ActionAnimation(chase_blue)
+rainbow_animation    = ActionAnimation(rainbow)
+chase_red_animation   = ActionAnimation(chase_red)
 
 ### --- End Neopixel/animation initialization
 
@@ -78,20 +78,20 @@ servo1 = servo.Servo(pwmio.PWMOut(SERVO_PIN_1, duty_cycle=2 ** 15, frequency=50)
 
 ### --- Create servo action object(s) that specifies a servo and its motion
 # Different action objects can use the same servo with different movements
-servoAction1 = ActionServo("Servo1Motion1", servo1, start_angle=20, end_angle=160, period=3)   # Wide slow steep motion
-servoAction2 = ActionServo("Servo1Motion2", servo1, start_angle=90, end_angle=120, period=1)    # Shorter faster sweep motion
+servo_action_1 = ActionServo("Servo1Motion1", servo1, start_angle=20, end_angle=160, period=3)   # Wide slow steep motion
+servo_action_2 = ActionServo("Servo1Motion2", servo1, start_angle=90, end_angle=120, period=1)    # Shorter faster sweep motion
 
 ### --- Create sound action objects to play different tracks
-songAction1 = ActionSound(player, 1)
-songAction2 = ActionSound(player, 2)
-songAction3 = ActionSound(player, 3)
-songAction4 = ActionSound(player, 4)
-songAction5 = ActionSound(player, 5)
-songAction6 = ActionSound(player, 6)
-songAction7 = ActionSound(player, 7)
-songAction8 = ActionSound(player, 8)
-songAction9 = ActionSound(player, 9)
-songAction10 = ActionSound(player, 10)
+song_action_1 = ActionSound(player, 1)
+song_action_2 = ActionSound(player, 2)
+song_action_3 = ActionSound(player, 3)
+song_action_4 = ActionSound(player, 4)
+song_action_5 = ActionSound(player, 5)
+song_action_6 = ActionSound(player, 6)
+song_action_7 = ActionSound(player, 7)
+song_action_8 = ActionSound(player, 8)
+song_action_9 = ActionSound(player, 9)
+song_action_10 = ActionSound(player, 10)
 
 
 ### --- Create a TriggerObject object for each trigger in the toy. Each trigger object takes a
@@ -103,49 +103,49 @@ songAction10 = ActionSound(player, 10)
 
 
 PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A, This button can be pressed 3 times to execute 3 different action groups
-ACTIONS_A   = [ ActionGroup(5, songAction1, chaseBlueAnimation),        # List of action groups associaciated with Button A
-                ActionGroup(8, songAction2, rainbowAnimation),          # Each action group plays a sound and an LED animation
-                ActionGroup(12, songAction3, chaseRedAnimation)]
+ACTIONS_A   = [ ActionGroup(5, song_action_1, chase_blue_animation),        # List of action groups associaciated with Button A
+                ActionGroup(8, song_action_2, rainbow_animation),          # Each action group plays a sound and an LED animation
+                ActionGroup(12, song_action_3, chase_red_animation)]
 
 PIN_B       = board.GP17                                                        # Pi Pico pin attached to Button B
-ACTIONS_B   = [ ActionGroup(60, songAction3, chaseBlueAnimation, servoAction1), # List of action groups associated with Button B
-                ActionGroup(60, songAction4, rainbowAnimation, servoAction1),   # Eacg action group plays a sound,
-                ActionGroup(20, songAction5, chaseRedAnimation, servoAction1) ]
+ACTIONS_B   = [ ActionGroup(60, song_action_3, chase_blue_animation, servo_action_1), # List of action groups associated with Button B
+                ActionGroup(60, song_action_4, rainbow_animation, servo_action_1),   # Eacg action group plays a sound,
+                ActionGroup(20, song_action_5, chase_red_animation, servo_action_1) ]
 
 PIN_C       = board.GP18                                                        # Pi Pico pin attached to Toggle Switch C
-ACTIONS_C   = [ ActionGroup(60, songAction3, rainbowAnimation) ]                # List (only containing one group) of action groups associated with toggle button C
+ACTIONS_C   = [ ActionGroup(60, song_action_3, rainbow_animation) ]                # List (only containing one group) of action groups associated with toggle button C
 
 PIN_IR      = board.GP19
-ACTIONS_IR  = [ ActionGroup(5, songAction7, chaseRedAnimation) ]
+ACTIONS_IR  = [ ActionGroup(5, song_action_7, chase_red_animation) ]
 
-ACTIONS_PING   = [  ActionGroup(6, songAction8, chaseBlueAnimation, servoAction2),  # List of action groups associated with the Ping Trigger
-                    ActionGroup(6, songAction9, rainbowAnimation, servoAction2),
-                    ActionGroup(6, songAction10, chaseRedAnimation, servoAction2) ]
+ACTIONS_PING   = [  ActionGroup(6, song_action_8, chase_blue_animation, servo_action_2),  # List of action groups associated with the Ping Trigger
+                    ActionGroup(6, song_action_9, rainbow_animation, servo_action_2),
+                    ActionGroup(6, song_action_10, chase_red_animation, servo_action_2) ]
 
 ####### Now, create trigger objects using the properties we defined above. The first property is the name, etc. 
 
-Ping1 = PingTrigger ("Ping1", board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
+ping_1 = PingTrigger ("Ping1", board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
 
 # Create button objects on Pins A and B. The "allow_restart" keyword determines what happens when the button is pushed
 # twice sequentially. If "allow_restart" is True, the next action group will start from the beginning. Otherwise all actions will stop
 # look in Debra's lib/trigger_object/button_trigger.py for arggument list
 
-ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A chooses its action groups randomly
-ButtonB = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)                       # Button B iterates through its action groups sequentially (the default)
+button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A chooses its action groups randomly
+button_b = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)                       # Button B iterates through its action groups sequentially (the default)
 
 # Create IR Trigger objects
-TriggerIR = IrTrigger("IR Trigger", PIN_IR, ACTIONS_IR, allow_restart=True)                     # IR Trigger craeted
+trigger_ir = IrTrigger("IR Trigger", PIN_IR, ACTIONS_IR, allow_restart=True)                     # IR Trigger craeted
 
 # Create a toggle switch object. Like a button but has the "toggle_both" keyword which determines whether it triggers when flipped one way (False) or both ways (True)
-ToggleC = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=False, toggle_both=True)
+toggle_c = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=False, toggle_both=True)
 
 
 # Create a list of trigger objects
-trigger_objects      = [ Ping1,
-                         ButtonA,
-                         ButtonB,
-                         TriggerIR,
-                         ToggleC ]
+trigger_objects      = [ ping_1,
+                         button_a,
+                         button_b,
+                         trigger_ir,
+                         toggle_c ]
 
 
 # Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects

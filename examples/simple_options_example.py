@@ -43,13 +43,13 @@ comet_red   = Comet(pixels, speed=0.3, tail_length=4, color=(255,0,0))
 comet_green = Comet(pixels, speed=0.3, tail_length=4, color=(0,255,0))
 
 ### --- Create animation action objects for use in ActionGroups
-chaseBlueAnimation      = ActionAnimation(chase_blue)
-chaseRedAnimation       = ActionAnimation(chase_red)
-chaseGreenAnimation     = ActionAnimation(chase_green)
+chase_blue_animation      = ActionAnimation(chase_blue)
+chase_red_animation       = ActionAnimation(chase_red)
+chase_green_animation     = ActionAnimation(chase_green)
 
-cometBlueAimation       = ActionAnimation(comet_blue)
-cometRedAimation        = ActionAnimation(comet_red)
-cometGreenAimation      = ActionAnimation(comet_green)
+comet_blue_animation       = ActionAnimation(comet_blue)
+comet_red_animation        = ActionAnimation(comet_red)
+comet_green_animation      = ActionAnimation(comet_green)
 
 ### --- End Neopixel/animation initialization
 print("Code is starting")
@@ -73,61 +73,61 @@ player = DYPlayer(uart=player_uart)
 ### --- Create sound action objects to play different tracks
 
 # Sound action objects for the instructions to the user to activate the different triggers
-soundRedButton      = ActionSound(player, 1) # 3 seconds long - "Press the red button"
-soundBlueButton     = ActionSound(player, 2) # 3 seconds long - "Press the blue button"
-soundGreenButton    = ActionSound(player, 3) # 3 seconds long - "Press the green button"
+sound_red_button      = ActionSound(player, 1) # 3 seconds long - "Press the red button"
+sound_blue_button     = ActionSound(player, 2) # 3 seconds long - "Press the blue button"
+sound_green_button    = ActionSound(player, 3) # 3 seconds long - "Press the green button"
 
 # Sound action objects for the response triggers
-soundPressedRed     = ActionSound(player, 4) # 3 seconds long - "You pressed the red button"
-soundPressedBlue    = ActionSound(player, 5) # 3 seconds long - "You pressed the blue button"
-soundPressedGreen   = ActionSound(player, 6) # 3 seconds long - "You pressed the green button"
+sound_pressed_red     = ActionSound(player, 4) # 3 seconds long - "You pressed the red button"
+sound_pressed_blue    = ActionSound(player, 5) # 3 seconds long - "You pressed the blue button"
+sound_pressed_green   = ActionSound(player, 6) # 3 seconds long - "You pressed the green button"
 
 
 ### --- Create a TriggerObject object for each button and or toggle switch on the board.
 
 # Button A is the button that gives the instructions to the user
 PIN_A       = board.GP16
-ACTIONS_A   = [ ActionGroup(5, soundRedButton, chaseRedAnimation),
-                ActionGroup(5, soundBlueButton, chaseBlueAnimation),
-                ActionGroup(5, soundGreenButton, chaseGreenAnimation)]
+ACTIONS_A   = [ ActionGroup(5, sound_red_button, chase_red_animation),
+                ActionGroup(5, sound_blue_button, chase_blue_animation),
+                ActionGroup(5, sound_green_button, chase_green_animation)]
 
 # Create the instructions TriggerObject
-ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=False)  # Button A is the instructions button and selects random targets when pressed
+button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=False)  # Button A is the instructions button and selects random targets when pressed
 
 # Red button parameters
 PIN_RED       = board.GP17                # Pi Pico pin attached to button
-ACTIONS_RED   = [ ActionGroup(5, soundPressedRed, cometRedAimation)]
+ACTIONS_RED   = [ ActionGroup(5, sound_pressed_red, comet_red_animation)]
 
 # Blue button parameters
 PIN_BLUE       = board.GP18                # Pi Pico pin attached to button
-ACTIONS_BLUE   = [ ActionGroup(5, soundPressedBlue, cometBlueAimation)]
+ACTIONS_BLUE   = [ ActionGroup(5, sound_pressed_blue, comet_blue_animation)]
 
 # Toggle switch C
 PIN_GREEN       = board.GP19                # Pi Pico pin attached to toggle switch
-ACTIONS_GREEN   = [ ActionGroup(5, soundPressedGreen, cometGreenAimation)]
+ACTIONS_GREEN   = [ ActionGroup(5, sound_pressed_green, comet_green_animation)]
 
 
 
 # Create Response Trigger Objects
-ButtonRed       = ButtonTrigger("Button Red", PIN_RED, ACTIONS_RED, allow_restart=True)
-ButtonBlue      = ButtonTrigger("Button Blue", PIN_BLUE, ACTIONS_BLUE, allow_restart=True)
-ButtonGreen     = ButtonTrigger("Button Green", PIN_GREEN, ACTIONS_GREEN, allow_restart=True)
+button_red       = ButtonTrigger("Button Red", PIN_RED, ACTIONS_RED, allow_restart=True)
+button_blue      = ButtonTrigger("Button Blue", PIN_BLUE, ACTIONS_BLUE, allow_restart=True)
+button_green     = ButtonTrigger("Button Green", PIN_GREEN, ACTIONS_GREEN, allow_restart=True)
 
-# Since ButtonA is the "instructions" button, we are going to add a "target" trigger to each of its
+# Since button_a is the "instructions" button, we are going to add a "target" trigger to each of its
 # ActionGroup objects. That target is the specific trigger the instructions tell the child to press
-ACTIONS_A[0].set_data("target", ButtonRed)
-ACTIONS_A[1].set_data("target", ButtonBlue)
-ACTIONS_A[2].set_data("target", ButtonGreen)
+ACTIONS_A[0].set_data("target", button_red)
+ACTIONS_A[1].set_data("target", button_blue)
+ACTIONS_A[2].set_data("target", button_green)
 
 # Create a list of trigger objects
-trigger_objects      = [ ButtonA,
-                         ButtonRed,
-                         ButtonBlue,
-                         ButtonGreen]  # Toggle trigger has the option to toggle when flipped
+trigger_objects      = [ button_a,
+                         button_red,
+                         button_blue,
+                         button_green]  # Toggle trigger has the option to toggle when flipped
 
 
 # Assign the value of the variable "instruction_trigger" to the trigger that provides instructions to the user
-instruction_trigger = ButtonA
+instruction_trigger = button_a
 
 
 # Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects
@@ -160,7 +160,7 @@ while True:
                 trigger.start()                                             # New trigger responds to activation
                 current_trigger = trigger
                 if trigger == instruction_trigger:                          # Instructions trigger activated - figure out new target/focus trigger
-                    new_focus = trigger.get_current_action_data("target")
+                    new_focus = trigger.get_current_group_data("target")
                     if new_focus is not None:
                         focus_trigger = new_focus
                 else:

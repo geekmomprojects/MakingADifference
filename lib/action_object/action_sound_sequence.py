@@ -40,13 +40,13 @@ class ActionSoundSequence(Action):
         #print("stopping ", self.name, " at duration ", self.active_duration())
         self.player.stop()
 
-    # Stop the player if the duration is specified and the song has played
-    # for longer than the specified duration
-    def action(self):
+    # When the current track has played for its duration, move on to the next
+    # track. Stop once all the tracks have played
+    def on_update(self):
         if self.active_duration() > self.current_track_stop:  #Time to stop the current track
             self.track_index = self.track_index + 1
             if self.track_index >= len(self.tracks):        #We have played all tracks
-                self.stop_action()
+                self.stop()
                 return False
             else:
                 self.player.stop()

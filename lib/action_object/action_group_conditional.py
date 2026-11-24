@@ -5,34 +5,30 @@ from action_object.action_group import ActionGroup
 # of action groups to play under the current conditions
 class ActionGroupConditional(ActionGroup):
     def __init__(self, condition_fcn, action_groups):
-        # Validate arguments
         self.action_groups      = action_groups
         self.condition_fcn      = condition_fcn
-        self.action_index       = 0
-        self.current_action     = action_groups[self.action_index]
+        self.group_index        = 0
+        self.current_group      = action_groups[self.group_index]
 
-    # The value of action_start_time is -1 if group is not currently active
     def is_active(self):
-        return self.current_action.is_active()
+        return self.current_group.is_active()
 
-    # Start all the actions in the list
+    # Ask the condition function which group to play, then start it
     def start(self):
-        self.action_index = self.condition_fcn()
-        self.current_action = self.action_groups[self.action_index]
-        self.current_action.start()
+        self.group_index = self.condition_fcn()
+        self.current_group = self.action_groups[self.group_index]
+        self.current_group.start()
 
     # must be called repeatedly in main loop while group is active
-    # will update the actions in the list
-    def do_action(self):
-        return self.current_action.do_action()
+    # will update the actions in the current group
+    def update(self):
+        return self.current_group.update()
 
-
-    # Stop all the actions in the list
     def stop(self):
-        self.current_action.stop()
+        self.current_group.stop()
 
     def set_data(self, key, value):
-        self.current_action.set_data(key, value)
+        self.current_group.set_data(key, value)
 
     def get_data(self, key):
-        return self.current_action.get_data(key)
+        return self.current_group.get_data(key)

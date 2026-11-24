@@ -16,9 +16,9 @@ class ActionSound(Action):
 
     # Stop the player if the duration is specified and the song has played
     # for longer than the specified duration
-    def action(self):
+    def on_update(self):
         if self.track_duration >= 0 and self.active_duration() > self.track_duration:
-            self.stop_action()
+            self.stop()
             return False
         else:
             return True

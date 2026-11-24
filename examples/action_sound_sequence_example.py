@@ -27,15 +27,15 @@ player = DYPlayer(uart=player_uart)
 #time.sleep(0.1)  #Leave time to initialize
 
 ### --- Create sound action objects to play different tracks
-songAction1 = ActionSound(player, 1)
-songAction2 = ActionSound(player, 2)
-songAction3 = ActionSound(player, 3)
-songAction4 = ActionSound(player, 4)
+song_action_1 = ActionSound(player, 1)
+song_action_2 = ActionSound(player, 2)
+song_action_3 = ActionSound(player, 3)
+song_action_4 = ActionSound(player, 4)
 
 # ActionSoundSequences takes the dyplayer object as its first argument
 # the second argument is a list of track numbers to play in the sequence specified
 # the third argument is a list specifying the number of seconds to play each track for.
-songSeq1  = ActionSoundSequence(player, [2,4,6],[5,7,6])
+song_seq_1  = ActionSoundSequence(player, [2,4,6],[5,7,6])
 
 
 ### --- Create a TriggerObject object for each trigger in the toy. Each trigger object takes a
@@ -44,17 +44,17 @@ songSeq1  = ActionSoundSequence(player, [2,4,6],[5,7,6])
 #  when triggered, and persist for the time duration specified.
 
 PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A
-ACTIONS_A   = [ ActionGroup(songSeq1.get_duration(), songSeq1),         # get_duration() gives the length of a ActionSoundSequence object
-                ActionGroup(5, songAction1),                            # List of action groups associaciated with Button A
-                ActionGroup(3, songAction2)]
+ACTIONS_A   = [ ActionGroup(song_seq_1.get_duration(), song_seq_1),         # get_duration() gives the length of a ActionSoundSequence object
+                ActionGroup(5, song_action_1),                            # List of action groups associaciated with Button A
+                ActionGroup(3, song_action_2)]
 
 # Create button objects on Pins A and B. The "allow_restart" keyword determines what happens when the button is pushed
 # twice sequentially. If "allow_restart" is True, the next action group will start from the beginning. Otherwise all actions will stop
-ButtonA = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=False)  # Button A chooses its action groups randomly
+button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=False)  # Button A chooses its action groups randomly
 
 # Create a list of trigger objects
 trigger_objects      = [
-                         ButtonA
+                         button_a
                        ]
 
 

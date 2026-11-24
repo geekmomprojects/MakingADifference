@@ -14,7 +14,7 @@ class ActionServo(Action):
         self.servo_pos = start_angle
         super().__init__(name=name)
 
-    def action(self):
+    def on_update(self):
         if not self.is_active() or self.time_since_last_action() < 0.05:  #Don't update TOO frequently
             return False
 
