@@ -9,6 +9,9 @@ from dyplayer import DYPlayer
 # Import all triggers used (can omit any that are not used)
 from trigger_object.button_trigger import ButtonTrigger
 
+# Import the main loop for the toy
+from toy import Toy
+
 from action_object.action_sound import ActionSound
 from action_object.action_sound_sequence import ActionSoundSequence
 from action_object.action_group import ActionGroup
@@ -58,33 +61,7 @@ trigger_objects      = [
                        ]
 
 
-# Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects
-current_trigger = None          # button corresponding to the current song or animation playing (None if no song/animation playing)
-
-while True:
-    # If a button is currently active, play its associated actions (song, animation, motor, etc...)
-    if current_trigger is not None:
-        if not current_trigger.play():   # Play the current trigger's actions, but check to see if they have ended
-            current_trigger.stop()       # Need to actively stop the trigger to make sure it advances
-            current_trigger = None
-
-    # Update all triggers (updates debouncers)
-    for trigger in trigger_objects:
-        trigger.update()
-
-    # check to see if the user activated any of the triggers.
-    for trigger in trigger_objects:
-        if trigger.is_triggered():                                           # Was the trigger activated?
-            print("")
-            print(trigger.name, "was triggered.")
-            if current_trigger is not None and trigger != current_trigger:   # There is a currently a different active trigger
-                print("")                                                    # so stop that one
-                print("stopping trigger", current_trigger.name)
-                print("")
-                current_trigger.stop()
-            trigger.respond_to_trigger()                                     # New trigger responds to activation
-            if trigger.is_active():
-                current_trigger = trigger
-            else:
-                current_trigger = None
-
+# Run the toy. To add new buttons, create new trigger objects and add them to the list above.
+# The main loop that runs the toy is in lib/toy.py
+toy = Toy(trigger_objects)
+toy.run()

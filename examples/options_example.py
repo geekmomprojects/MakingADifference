@@ -24,6 +24,9 @@ from action_object.action_group import ActionGroup
 from trigger_object.button_trigger import ButtonTrigger
 from trigger_object.toggle_trigger import ToggleTrigger
 from trigger_object.ping_trigger import PingTrigger
+
+# Import the main loop for the toy
+from toy import InstructionGame
 #from trigger_object.ir_trigger import IrTrigger
 
 
@@ -135,50 +138,8 @@ trigger_objects      = [ button_a,
                          ping_1]  # Toggle trigger has the option to toggle when flipped
 
 
-# Assign the value of the variable "instruction_trigger" to the trigger that provides instructions to the user
-instruction_trigger = button_a
-
-
-# Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects
-current_trigger = None                  # button corresponding to the current song or animation playing (None if no song/animation playing)
-focus_trigger   = instruction_trigger   # The trigger that currently has the focus. Should initialize with instruction trigger
-
-while True:
-    # If a button is currently active, play its associated actions (song, animation, motor, etc...)
-    if current_trigger is not None:
-        if not current_trigger.play():                       # Play the current trigger's actions, but check to see if they have ended
-            if current_trigger == instruction_trigger:       # The trigger that just finished playing was the instrctions trigger
-                current_trigger.stop(set_next_action=False)  #  Actions have ended. Actively stop trigger, but don't advance actions group until the focus trigger is selected
-            else:                                            # The trigger was not the instructions trigger
-                current_trigger.stop(set_next_action=True)   #  Actively stop focus trigger to advance its action group
-            current_trigger = None                           # No trigger actions currently playing
-
-    # Update all triggers (updates debouncers)
-    for trigger in trigger_objects:
-        trigger.update()
-
-    # check to see if the user activated any of the triggers.
-    for trigger in trigger_objects:                                          # Iterate over all triggers
-        if trigger.is_triggered():                                           # Was the trigger just activated?
-            print("")
-            print(trigger.name, "was triggered.")
-            if current_trigger is not None and trigger != current_trigger:   # There is a currently a different active trigger
-                current_trigger.stop(set_next_action=False)                 # Dont advance action group unless it's the right response
-            if trigger == focus_trigger:                                    # User selected the correct trigger
-                print("the correct trigger was chosen.")
-                trigger.start()                                             # New trigger responds to activation
-                current_trigger = trigger
-                if trigger == instruction_trigger:                          # Instructions trigger activated - figure out new target/focus trigger
-                    new_focus = trigger.get_current_group_data("target")
-                    if new_focus is not None:
-                        focus_trigger = new_focus
-                else:
-                    focus_trigger = instruction_trigger                     # If target was activated - set focus back to instructions trigger
-                    instruction_trigger.advance()                           # Advance instructions to the next target
-            else:
-                print("the wrong trigger was chosen. The correct trigger was", focus_trigger.name)
-                if focus_trigger != instruction_trigger:
-                    current_trigger = instruction_trigger                   # Wrong trigger was selected, so play instructions again
-                    current_trigger.start()
-            break                                                           # Don't allow more than one simultaneous trigger
-
+# Run the game. Button A gives the instructions; the game waits for the user to activate
+# the trigger the instruction asked for. A wrong answer repeats the instruction.
+# The main loop that runs the game is in lib/toy.py
+game = InstructionGame(button_a, trigger_objects)
+game.run()

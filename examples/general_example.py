@@ -26,6 +26,9 @@ from trigger_object.toggle_trigger import ToggleTrigger
 from trigger_object.ping_trigger import PingTrigger
 from trigger_object.ir_trigger import IrTrigger
 
+# Import the main loop for the toy
+from toy import Toy
+
 
 
 ### --- Create the Neopixel object storing and defining the strip properties.
@@ -148,33 +151,7 @@ trigger_objects      = [ ping_1,
                          toggle_c ]
 
 
-# Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects
-current_trigger = None          # button corresponding to the current song or animation playing (None if no song/animation playing)
-
-while True:
-    # If a button is currently active, play its associated actions (song, animation, motor, etc...)
-    if current_trigger is not None:
-        if not current_trigger.play():   # Play the current trigger's actions, but check to see if they have ended
-            current_trigger.stop()       # Need to actively stop the trigger to make sure it advances
-            current_trigger = None
-
-    # Update all triggers (updates debouncers)
-    for trigger in trigger_objects:
-        trigger.update()
-
-    # check to see if the user activated any of the triggers.
-    for trigger in trigger_objects:
-        if trigger.is_triggered():                                           # Was the trigger activated?
-            print("")
-            print(trigger.name, "was triggered.")
-            if current_trigger is not None and trigger != current_trigger:   # There is a currently a different active trigger
-                print("")                                                    # so stop that one
-                print("stopping trigger", current_trigger.name)
-                print("")
-                current_trigger.stop()
-            trigger.respond_to_trigger()                                     # New trigger responds to activation
-            if trigger.is_active():
-                current_trigger = trigger
-            else:
-                current_trigger = None
-
+# Run the toy. To add new buttons, create new trigger objects and add them to the list above.
+# The main loop that runs the toy is in lib/toy.py
+toy = Toy(trigger_objects)
+toy.run()

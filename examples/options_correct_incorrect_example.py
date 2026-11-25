@@ -19,6 +19,9 @@ from action_object.action_group import ActionGroup
 # Import all triggers used (can omit any that are not used)
 from trigger_object.button_trigger import ButtonTrigger
 
+# Import the main loop for the toy
+from toy import InstructionGame
+
 
 ### --- Create the Neopixel object and animation(s).
 #  Replace num_pixels with thenumber of pixels corresponding to your hardware
@@ -79,14 +82,10 @@ sound_try_again   = ActionSound(player, 10)  # 3 seconds long - "try again"
 action_try_again  = ActionGroup(3, sound_try_again, rainbow_animation)
 
 
-# In the action groups for buttons B and C, the action for an incorrect answer
-# is the first item in the list and the action for a correct answer is
-# the second item in the list
-ACTION_INCORRECT    = 0
-ACTION_CORRECT      = 1
-
-ACTIONS_B = [action_try_again, action_touched_b]
-ACTIONS_C = [action_try_again, action_touched_c]
+# Buttons B and C play these when they are the correct answer.
+# (action_try_again plays for any wrong answer - see the end of this file)
+ACTIONS_B = [action_touched_b]
+ACTIONS_C = [action_touched_c]
 
 
 # Button A is the button that gives the instructions to the user
@@ -114,59 +113,8 @@ trigger_objects      = [ button_a,
                          button_c]
 
 
-# Assign the value of the variable "instruction_trigger" to the trigger that provides instructions to the user
-instruction_trigger = button_a
-
-# Variables needed for the main look to track the correct button to press
-current_trigger = None                  # button corresponding to the current song or animation playing (None if no song/animation playing)
-focus_trigger   = instruction_trigger   # The trigger that currently has the focus. Should initialize with instruction trigger
-instruction_index = 0                   # Index (in ACTIONS_A) of the instruction most recently given to the user
-
-
-
-# Main loop. No need to change code here to change the number of buttons. To add new buttons, simply create new button objects
-while True:
-    # If a button is currently active, play its associated actions (song, animation, motor, etc...)
-    if current_trigger is not None:
-        if not current_trigger.play():                       # Play the current trigger's actions, but check to see if they have ended
-            current_trigger.stop()
-            current_trigger = None                           # No trigger actions currently playing
-
-    # Update all triggers (updates debouncers)
-    for trigger in trigger_objects:
-        trigger.update()
-
-    # check to see if the user activated any of the triggers.
-    for trigger in trigger_objects:                                          # Iterate over all triggers
-        if trigger.is_triggered():                                           # Was the trigger just activated?
-            print("")
-            print(trigger.name, "was triggered.")
-            if current_trigger is not None:
-                if trigger == current_trigger:
-                    if current_trigger.is_active():                          # if user presses the current trigger while it is
-                                                                             #  still playing, ignore it
-                        continue
-                else:                                                        # There is a currently a different active trigger
-                    current_trigger.stop(set_next_action = False)                # Stop the current trigge
-            current_trigger = trigger
-            if current_trigger == focus_trigger:                                    # User selected the correct trigger
-                print("the correct trigger was chosen.")
-                if current_trigger == instruction_trigger:
-                    current_trigger.advance()
-                    instruction_index = current_trigger.group_index            # Remember which instruction is being given
-                    focus_trigger = current_trigger.get_current_group_data("target")
-                else:
-                    current_trigger.set_current_group(ACTION_CORRECT)
-                    focus_trigger = instruction_trigger                         # Correct answer, next press should be instructions
-            else:
-                print("expected trigger ", focus_trigger.name, " but user pressed ", current_trigger.name)
-                if current_trigger.is_active():
-                    current_trigger.stop()
-                if current_trigger == instruction_trigger:                      # User pressed the instructions button instead of the target,
-                    current_trigger.set_current_group(instruction_index)       #  so repeat the same instruction (the target hasn't changed)
-                else:
-                    current_trigger.set_current_group(ACTION_INCORRECT)
-
-            current_trigger.respond_to_trigger()
-            break                                                           # Don't allow more than one simultaneous trigger
-
+# Run the game. Button A gives the instructions; the game waits for the user to activate
+# the trigger the instruction asked for. A wrong answer plays action_try_again.
+# The main loop that runs the game is in lib/toy.py
+game = InstructionGame(button_a, trigger_objects, wrong_answer_group=action_try_again)
+game.run()
