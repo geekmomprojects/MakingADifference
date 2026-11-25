@@ -24,6 +24,17 @@ from trigger_object.button_trigger import ButtonTrigger
 
 # Import the main loop for the toy
 from toy import InstructionGame
+
+### --- Hardware settings. Change these to match how your toy is wired.
+# board.GP16 means the pin labelled GP16 on the Pico (not the 16th physical pin)
+BUTTON_A_PIN     = board.GP16  # Button A (gives the instructions)
+BUTTON_RED_PIN   = board.GP17  # Red button
+BUTTON_BLUE_PIN  = board.GP18  # Blue button
+BUTTON_GREEN_PIN = board.GP19  # Green button
+PIXELS_PIN       = board.GP27  # NeoPixel strip data in
+NUM_PIXELS       = 9           # Number of LEDs on the NeoPixel strip
+MP3_TX_PIN       = board.GP8   # Pico TX -> MP3 player RX
+MP3_RX_PIN       = board.GP9   # Pico RX <- MP3 player TX
 #from trigger_object.toggle_trigger import ToggleTrigger
 #from trigger_object.ping_trigger import PingTrigger
 #from trigger_object.ir_trigger import IrTrigger
@@ -31,9 +42,7 @@ from toy import InstructionGame
 
 ### --- Create the Neopixel object and animation(s).
 ### --- Create the Neopixel object and animation(s).
-#  Replace num_pixels with thenumber of pixels corresponding to your hardware
-num_pixels = 9
-pixels = neopixel.NeoPixel(board.GP27, num_pixels, pixel_order=neopixel.GRB, brightness = 0.2, auto_write=False)
+pixels = neopixel.NeoPixel(PIXELS_PIN, NUM_PIXELS, pixel_order=neopixel.GRB, brightness = 0.2, auto_write=False)
 pixels.fill((0,0,0))
 pixels.show()
 
@@ -59,9 +68,8 @@ print("Code is starting")
 
 ### --- Create the MP3 player object
 # TX/RX pins to be connected to RX/TX on the MP3 player
-# Pico UART2 TX (GP8) <-> MP3 Player RX
-# Pico UART2 RX (GP9) <-> MP3 Player TX
-player_uart = busio.UART(board.GP8, board.GP9, baudrate=9600)
+# (the pins are set at the top of this file)
+player_uart = busio.UART(MP3_TX_PIN, MP3_RX_PIN, baudrate=9600)
 
 # Create Player Object
 player = DYPlayer(uart=player_uart)
@@ -89,32 +97,28 @@ sound_pressed_green   = ActionSound(player, 6) # 3 seconds long - "You pressed t
 ### --- Create a TriggerObject object for each button and or toggle switch on the board.
 
 # Button A is the button that gives the instructions to the user
-PIN_A       = board.GP16
 ACTIONS_A   = [ ActionGroup(5, sound_red_button, chase_red_animation),
                 ActionGroup(5, sound_blue_button, chase_blue_animation),
                 ActionGroup(5, sound_green_button, chase_green_animation)]
 
 # Create the instructions TriggerObject
-button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=False)  # Button A is the instructions button and selects random targets when pressed
+button_a = ButtonTrigger("Button A", BUTTON_A_PIN, ACTIONS_A, allow_restart=True, random_actions=False)  # Button A is the instructions button and selects random targets when pressed
 
 # Red button parameters
-PIN_RED       = board.GP17                # Pi Pico pin attached to button
 ACTIONS_RED   = [ ActionGroup(5, sound_pressed_red, comet_red_animation)]
 
 # Blue button parameters
-PIN_BLUE       = board.GP18                # Pi Pico pin attached to button
 ACTIONS_BLUE   = [ ActionGroup(5, sound_pressed_blue, comet_blue_animation)]
 
 # Toggle switch C
-PIN_GREEN       = board.GP19                # Pi Pico pin attached to toggle switch
 ACTIONS_GREEN   = [ ActionGroup(5, sound_pressed_green, comet_green_animation)]
 
 
 
 # Create Response Trigger Objects
-button_red       = ButtonTrigger("Button Red", PIN_RED, ACTIONS_RED, allow_restart=True)
-button_blue      = ButtonTrigger("Button Blue", PIN_BLUE, ACTIONS_BLUE, allow_restart=True)
-button_green     = ButtonTrigger("Button Green", PIN_GREEN, ACTIONS_GREEN, allow_restart=True)
+button_red       = ButtonTrigger("Button Red", BUTTON_RED_PIN, ACTIONS_RED, allow_restart=True)
+button_blue      = ButtonTrigger("Button Blue", BUTTON_BLUE_PIN, ACTIONS_BLUE, allow_restart=True)
+button_green     = ButtonTrigger("Button Green", BUTTON_GREEN_PIN, ACTIONS_GREEN, allow_restart=True)
 
 # Since button_a is the "instructions" button, we are going to add a "target" trigger to each of its
 # ActionGroup objects. That target is the specific trigger the instructions tell the child to press

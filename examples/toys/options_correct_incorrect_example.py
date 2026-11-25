@@ -22,11 +22,19 @@ from trigger_object.button_trigger import ButtonTrigger
 # Import the main loop for the toy
 from toy import InstructionGame
 
+### --- Hardware settings. Change these to match how your toy is wired.
+# board.GP16 means the pin labelled GP16 on the Pico (not the 16th physical pin)
+BUTTON_A_PIN = board.GP16  # Button A (gives the instructions)
+BUTTON_B_PIN = board.GP17  # Button B
+BUTTON_C_PIN = board.GP18  # Button C
+PIXELS_PIN   = board.GP20  # NeoPixel strip data in
+NUM_PIXELS   = 12          # Number of LEDs on the NeoPixel strip
+MP3_TX_PIN   = board.GP8   # Pico TX -> MP3 player RX
+MP3_RX_PIN   = board.GP9   # Pico RX <- MP3 player TX
+
 
 ### --- Create the Neopixel object and animation(s).
-#  Replace num_pixels with thenumber of pixels corresponding to your hardware
-num_pixels = 12
-pixels = neopixel.NeoPixel(board.GP20, num_pixels, brightness = 0.2, auto_write=False)
+pixels = neopixel.NeoPixel(PIXELS_PIN, NUM_PIXELS, brightness = 0.2, auto_write=False)
 pixels.fill((0,0,0))
 pixels.show()
 
@@ -48,9 +56,8 @@ print("Code is starting")
 
 ### --- Create the MP3 player object
 # TX/RX pins to be connected to RX/TX on the MP3 player
-# Pico UART2 TX (GP8) <-> MP3 Player RX
-# Pico UART2 RX (GP9) <-> MP3 Player TX
-player_uart = busio.UART(board.GP8, board.GP9, baudrate=9600)
+# (the pins are set at the top of this file)
+player_uart = busio.UART(MP3_TX_PIN, MP3_RX_PIN, baudrate=9600)
 
 # Create Player Object
 player = DYPlayer(uart=player_uart)
@@ -89,16 +96,13 @@ ACTIONS_C = [action_touched_c]
 
 
 # Button A is the button that gives the instructions to the user
-PIN_A       = board.GP16
 # Create the instructions TriggerObject
-button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
+button_a = ButtonTrigger("Button A", BUTTON_A_PIN, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
 
 # Button B
-PIN_B       = board.GP17                # Pi Pico pin attached to button
-button_b =   ButtonTrigger("Button B", PIN_B, ACTIONS_B)
+button_b =   ButtonTrigger("Button B", BUTTON_B_PIN, ACTIONS_B)
 
-PIN_C       = board.GP18                # Pi Pico pin attached to toggle switch
-button_c =   ButtonTrigger("Button C", PIN_C, ACTIONS_C)
+button_c =   ButtonTrigger("Button C", BUTTON_C_PIN, ACTIONS_C)
 
 # Create Response Trigger Objects
 

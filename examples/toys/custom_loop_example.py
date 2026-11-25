@@ -16,15 +16,21 @@ from action_object.action_led import ActionLED
 from action_object.action_group import ActionGroup
 from trigger_object.button_trigger import ButtonTrigger
 
+### --- Hardware settings. Change these to match how your toy is wired.
+# board.GP16 means the pin labelled GP16 on the Pico (not the 16th physical pin)
+BUTTON_A_PIN = board.GP16  # Button A
+BUTTON_B_PIN = board.GP17  # Button B
+LED_PIN      = board.LED   # The Pico's built-in LED
+
 
 ### --- Create the actions
 # The Pico's built-in LED, used by both buttons
-led_action = ActionLED(board.LED)
+led_action = ActionLED(LED_PIN)
 
 ### --- Create the triggers
 # Button A lights the LED for 2 seconds, Button B lights it for 5 seconds
-button_a = ButtonTrigger("Button A", board.GP16, [ActionGroup(2, led_action)])
-button_b = ButtonTrigger("Button B", board.GP17, [ActionGroup(5, led_action)])
+button_a = ButtonTrigger("Button A", BUTTON_A_PIN, [ActionGroup(2, led_action)])
+button_b = ButtonTrigger("Button B", BUTTON_B_PIN, [ActionGroup(5, led_action)])
 
 trigger_objects = [button_a, button_b]
 

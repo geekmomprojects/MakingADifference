@@ -27,14 +27,25 @@ from trigger_object.ping_trigger import PingTrigger
 
 # Import the main loop for the toy
 from toy import InstructionGame
+
+### --- Hardware settings. Change these to match how your toy is wired.
+# board.GP16 means the pin labelled GP16 on the Pico (not the 16th physical pin)
+BUTTON_A_PIN   = board.GP16  # Button A (gives the instructions)
+BUTTON_B_PIN   = board.GP17  # Button B
+TOGGLE_C_PIN   = board.GP18  # Toggle switch C
+PING1_TRIG_PIN = board.GP4   # Ping sensor Trig
+PING1_ECHO_PIN = board.GP5   # Ping sensor Echo
+SERVO1_PIN     = board.GP12  # Servo signal (see the note about PWM pins where the servo is created)
+PIXELS_PIN     = board.GP27  # NeoPixel strip data in
+NUM_PIXELS     = 9           # Number of LEDs on the NeoPixel strip
+MP3_TX_PIN     = board.GP8   # Pico TX -> MP3 player RX
+MP3_RX_PIN     = board.GP9   # Pico RX <- MP3 player TX
 #from trigger_object.ir_trigger import IrTrigger
 
 
 ### --- Create the Neopixel object and animation(s).
 ### --- Create the Neopixel object and animation(s).
-#  Replace num_pixels with thenumber of pixels corresponding to your hardware
-num_pixels = 9
-pixels = neopixel.NeoPixel(board.GP27, num_pixels, brightness = 0.2, auto_write=False)
+pixels = neopixel.NeoPixel(PIXELS_PIN, NUM_PIXELS, brightness = 0.2, auto_write=False)
 pixels.fill((0,0,0))
 pixels.show()
 
@@ -52,9 +63,8 @@ print("Code is starting")
 
 ### --- Create the MP3 player object
 # TX/RX pins to be connected to RX/TX on the MP3 player
-# Pico UART2 TX (GP8) <-> MP3 Player RX
-# Pico UART2 RX (GP9) <-> MP3 Player TX
-player_uart = busio.UART(board.GP8, board.GP9, baudrate=9600)
+# (the pins are set at the top of this file)
+player_uart = busio.UART(MP3_TX_PIN, MP3_RX_PIN, baudrate=9600)
 
 # Create Player Object
 player = DYPlayer(uart=player_uart)
@@ -73,8 +83,7 @@ player = DYPlayer(uart=player_uart)
 # are wired to reduce jitter. Pins 12/18 and 13/19 share some of the same
 # resources, so if you plan to have more than one servo moving at a given time,
 # then its best to place them on 12/13 or 18/19
-SERVO_PIN_1 = board.GP12
-servo1 = servo.Servo(pwmio.PWMOut(SERVO_PIN_1, duty_cycle=2 ** 15, frequency=50))
+servo1 = servo.Servo(pwmio.PWMOut(SERVO1_PIN, duty_cycle=2 ** 15, frequency=50))
 
 ### --- Create servo action object(s) that specifies a servo and its motion
 # Different action objects can use the same servo with different movements
@@ -97,22 +106,19 @@ sound_activated_p = ActionSound(player, 20) # 3 seconds long - "You activated th
 ### --- Create a TriggerObject object for each button and or toggle switch on the board.
 
 # Button A is the button that gives the instructions to the user
-PIN_A       = board.GP16
 ACTIONS_A   = [ ActionGroup(5, sound_press_b, chase_blue_animation),
                 ActionGroup(5, sound_toggle_c, rainbow_animation),
                 ActionGroup(5, song_activate_p, chase_red_animation)]
 
 # Create the instructions TriggerObject
-button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
+button_a = ButtonTrigger("Button A", BUTTON_A_PIN, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A is the instructions button and selects random targets when pressed
 
 # Button B activates a motor when pressed
-PIN_B       = board.GP17                # Pi Pico pin attached to button
 ACTIONS_B   = [ ActionGroup(4, sound_touched_b, chase_blue_animation, servo_action_1),
                 ActionGroup(4, sound_touched_b, rainbow_animation, servo_action_1),
                 ActionGroup(4, sound_touched_b, chase_red_animation, servo_action_1) ]
 
 # Toggle switch C
-PIN_C       = board.GP18                # Pi Pico pin attached to toggle switch
 ACTIONS_C   = [ ActionGroup(4, sound_toggled_c, rainbow_animation) ]
 
 # Action groups triggered by the ping sensor
@@ -121,9 +127,9 @@ ACTIONS_PING   = [  ActionGroup(4, sound_activated_p, chase_blue_animation, serv
                     ActionGroup(4, sound_activated_p, chase_red_animation, servo_action_1) ]
 
 # Create Response Trigger Objects
-button_b = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)
-toggle_c = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=True, toggle_both=False) # both ways or only when flipped one way (toggle_both keyword)
-ping_1 = PingTrigger ("Ping1",board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)
+button_b = ButtonTrigger("Button B", BUTTON_B_PIN, ACTIONS_B, allow_restart=True)
+toggle_c = ToggleTrigger("Toggle C", TOGGLE_C_PIN, ACTIONS_C, allow_restart=True, toggle_both=False) # both ways or only when flipped one way (toggle_both keyword)
+ping_1 = PingTrigger("Ping1", PING1_TRIG_PIN, PING1_ECHO_PIN, 8, ACTIONS_PING, allow_restart=True)
 
 # Since button_a is the "instructions" button, we are going to add a "target" trigger to each of its
 # ActionGroup objects. That target is the specific trigger the instructions tell the child to press

@@ -29,16 +29,28 @@ from trigger_object.ir_trigger import IrTrigger
 # Import the main loop for the toy
 from toy import Toy
 
+### --- Hardware settings. Change these to match how your toy is wired.
+# board.GP16 means the pin labelled GP16 on the Pico (not the 16th physical pin)
+BUTTON_A_PIN   = board.GP16  # Button A
+BUTTON_B_PIN   = board.GP17  # Button B
+TOGGLE_C_PIN   = board.GP18  # Toggle switch C
+IR_PIN         = board.GP19  # IR sensor output
+PING1_TRIG_PIN = board.GP4   # Ping sensor Trig
+PING1_ECHO_PIN = board.GP5   # Ping sensor Echo
+SERVO1_PIN     = board.GP12  # Servo signal (see the note about PWM pins where the servo is created)
+PIXELS_PIN     = board.GP27  # NeoPixel strip data in
+NUM_PIXELS     = 9           # Number of LEDs on the NeoPixel strip
+MP3_TX_PIN     = board.GP8   # Pico TX -> MP3 player RX
+MP3_RX_PIN     = board.GP9   # Pico RX <- MP3 player TX
+
 
 
 ### --- Create the Neopixel object storing and defining the strip properties.
-#  Replace num_pixels with thenumber of pixels corresponding to your hardware
-num_pixels = 9
-pixels = neopixel.NeoPixel(board.GP27, num_pixels, brightness = 0.2, auto_write=False)
+pixels = neopixel.NeoPixel(PIXELS_PIN, NUM_PIXELS, brightness = 0.2, auto_write=False)
 pixels.fill((0,0,0))
 pixels.show()
 
-### --- Creating objects of type animation and specifying their properties. (pixels, which was defined on line 38, is the first argument of the animation object)
+### --- Creating objects of type animation and specifying their properties. (pixels, which was defined above, is the first argument of the animation object)
 
 chase_blue = Chase(pixels, speed=0.3, size=1, spacing=2, color=(0,0,255))  ### creating a chase object that will run an animation stored in a variable called chase_blue
 chase_red  = Chase(pixels, speed=0.3, size=1, spacing=1, color=(255,0,0))  ### creating a chase object that will run an animation stored in a variable called chase_red
@@ -55,9 +67,8 @@ print("Code is starting")
 
 ### --- Create the MP3 player object
 # TX/RX pins to be connected to RX/TX on the MP3 player
-# Pico UART2 TX (GP8) <-> MP3 Player RX
-# Pico UART2 RX (GP9) <-> MP3 Player TX
-player_uart = busio.UART(board.GP8, board.GP9, baudrate=9600)
+# (the pins are set at the top of this file)
+player_uart = busio.UART(MP3_TX_PIN, MP3_RX_PIN, baudrate=9600)
 
 # Create Player Object
 player = DYPlayer(uart=player_uart)
@@ -76,8 +87,7 @@ player = DYPlayer(uart=player_uart)
 # are wired to reduce jitter. Pins 12/18 and 13/19 share some of the same
 # resources, so if you plan to have more than one servo moving at a given time,
 # then its best to place them on 12/13 or 18/19
-SERVO_PIN_1 = board.GP12
-servo1 = servo.Servo(pwmio.PWMOut(SERVO_PIN_1, duty_cycle=2 ** 15, frequency=50))
+servo1 = servo.Servo(pwmio.PWMOut(SERVO1_PIN, duty_cycle=2 ** 15, frequency=50))
 
 ### --- Create servo action object(s) that specifies a servo and its motion
 # Different action objects can use the same servo with different movements
@@ -105,20 +115,16 @@ song_action_10 = ActionSound(player, 10)
 ##### First we must create and define properties for each trigger object. 
 
 
-PIN_A       = board.GP16                                                # Pi Pico pin associated with Button A, This button can be pressed 3 times to execute 3 different action groups
 ACTIONS_A   = [ ActionGroup(5, song_action_1, chase_blue_animation),        # List of action groups associaciated with Button A
                 ActionGroup(8, song_action_2, rainbow_animation),          # Each action group plays a sound and an LED animation
                 ActionGroup(12, song_action_3, chase_red_animation)]
 
-PIN_B       = board.GP17                                                        # Pi Pico pin attached to Button B
 ACTIONS_B   = [ ActionGroup(60, song_action_3, chase_blue_animation, servo_action_1), # List of action groups associated with Button B
                 ActionGroup(60, song_action_4, rainbow_animation, servo_action_1),   # Eacg action group plays a sound,
                 ActionGroup(20, song_action_5, chase_red_animation, servo_action_1) ]
 
-PIN_C       = board.GP18                                                        # Pi Pico pin attached to Toggle Switch C
 ACTIONS_C   = [ ActionGroup(60, song_action_3, rainbow_animation) ]                # List (only containing one group) of action groups associated with toggle button C
 
-PIN_IR      = board.GP19
 ACTIONS_IR  = [ ActionGroup(5, song_action_7, chase_red_animation) ]
 
 ACTIONS_PING   = [  ActionGroup(6, song_action_8, chase_blue_animation, servo_action_2),  # List of action groups associated with the Ping Trigger
@@ -127,20 +133,20 @@ ACTIONS_PING   = [  ActionGroup(6, song_action_8, chase_blue_animation, servo_ac
 
 ####### Now, create trigger objects using the properties we defined above. The first property is the name, etc. 
 
-ping_1 = PingTrigger ("Ping1", board.GP14, board.GP15, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
+ping_1 = PingTrigger("Ping1", PING1_TRIG_PIN, PING1_ECHO_PIN, 8, ACTIONS_PING, allow_restart=True)  # Sonar sensor on pins
 
 # Create button objects on Pins A and B. The "allow_restart" keyword determines what happens when the button is pushed
 # twice sequentially. If "allow_restart" is True, the next action group will start from the beginning. Otherwise all actions will stop
 # look in Debra's lib/trigger_object/button_trigger.py for arggument list
 
-button_a = ButtonTrigger("Button A", PIN_A, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A chooses its action groups randomly
-button_b = ButtonTrigger("Button B", PIN_B, ACTIONS_B, allow_restart=True)                       # Button B iterates through its action groups sequentially (the default)
+button_a = ButtonTrigger("Button A", BUTTON_A_PIN, ACTIONS_A, allow_restart=True, random_actions=True)  # Button A chooses its action groups randomly
+button_b = ButtonTrigger("Button B", BUTTON_B_PIN, ACTIONS_B, allow_restart=True)                       # Button B iterates through its action groups sequentially (the default)
 
 # Create IR Trigger objects
-trigger_ir = IrTrigger("IR Trigger", PIN_IR, ACTIONS_IR, allow_restart=True)                     # IR Trigger craeted
+trigger_ir = IrTrigger("IR Trigger", IR_PIN, ACTIONS_IR, allow_restart=True)                     # IR Trigger craeted
 
 # Create a toggle switch object. Like a button but has the "toggle_both" keyword which determines whether it triggers when flipped one way (False) or both ways (True)
-toggle_c = ToggleTrigger("Toggle C", PIN_C, ACTIONS_C, allow_restart=False, toggle_both=True)
+toggle_c = ToggleTrigger("Toggle C", TOGGLE_C_PIN, ACTIONS_C, allow_restart=False, toggle_both=True)
 
 
 # Create a list of trigger objects

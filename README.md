@@ -2,7 +2,7 @@
 
 CircuitPython code for interactive toys built on a Raspberry Pi Pico.
 
-When someone presses a button or waves a hand in front of a sensor, the toy
+When someone provides input such as pressing a button or waving a hand in front of a sensor, the toy
 responds. It might play a sound, light up LEDs, or move a motor, or do several
 of these at once.
 
@@ -17,8 +17,7 @@ Trigger            →   ActionGroup                →   Action
  button, sensor...)                                    animation, move a servo...)
 ```
 
-- An **Action** is one thing a peripheral does, like "play track 3" or "run a
-  rainbow animation".
+- An **Action** is one thing a peripheral does, like the mp3 player playing track 3 or an led string displaying a rainbow animation.
 - An **ActionGroup** is a set of actions that start together, play for a set
   number of seconds, then stop together.
 - A **Trigger** is a button, switch or sensor. It has a list of action groups.
@@ -163,16 +162,20 @@ step by step.
 
 ## Wiring used by the examples
 
+Each example sets its pins in a "Hardware settings" block at the top of the
+file, like `PING1_TRIG_PIN = board.GP4`. If your toy is wired differently,
+change the pins there.
+
 | Peripheral | Pico pin(s) | Notes |
 |---|---|---|
 | Button A | GP16 | Button between the pin and GND. No resistor needed (the Pico's internal pull-up is used). |
 | Button B | GP17 | as above |
 | Button / toggle switch C | GP18 | as above |
 | IR sensor / 4th button | GP19 | |
-| Ping sensor (HC-SR04) | GP14 = trigger, GP15 = echo | The Pico's pins are 3.3V. Use a 3.3V-compatible sensor (e.g. HC-SR04P), or a voltage divider on the echo pin. |
+| Ping sensor (HC-SR04) | GP4 = trig, GP5 = echo | The Pico's pins are 3.3V. Use a 3.3V-compatible sensor (e.g. HC-SR04P), or a voltage divider on the echo pin. |
 | Servo | GP12 | Power the servo from 5V (VBUS), not 3.3V |
 | NeoPixel (WS2812) strip | GP27 (GP20 in `options_correct_incorrect_example.py`) | |
-| MP3 player (DY-SV5W) | GP8 → player RX, GP9 ← player TX | Set the player's DIP switches to 1 = low, 2 = low, 3 = high |
+| MP3 player (DY-SV5W) | GP8 → player RX, GP9 ← player TX | The code has been tested with the DY-SV17F and DY-SV5W mp3 players. Set the player's DIP switches to 1 = low, 2 = low, 3 = high |
 
 The MP3 player's track numbers follow the order the files were saved to its SD
 card. Naming the files `00001.mp3`, `00002.mp3`, … and copying them to the card
@@ -207,7 +210,14 @@ class ActionMyThing(Action):
 **A new trigger:** create a child class of `TriggerObject` and fill in
 `update()`, which reads the sensor every time through the loop, and
 `is_triggered()`, which returns `True` when the trigger was just activated.
-`lib/trigger_object/button_trigger.py` is a short example to copy.
+`lib/trigger_object/ping_trigger.py` is an example.
+
+If the new trigger is connected to a single digital (on/off) pin, create a
+child class of `DigitalPinTrigger` instead. It already sets up the pin and
+reads it. By default it triggers when the pin goes low, so a sensor that works
+that way needs no code at all (see `lib/trigger_object/ir_trigger.py`). To
+trigger on something else, override `is_triggered()`, as
+`lib/trigger_object/toggle_trigger.py` does.
 
 ## Updating toys written for version 1
 
